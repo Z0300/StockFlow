@@ -1,0 +1,7 @@
+﻿services:
+  stockflow.api:
+    image: stockflow.api
+    build:
+      context: .
+      dockerfile: StockFlow.Api/Dockerfile
+
