@@ -16,7 +16,7 @@ public class Result
         Error = error;
     }
 
-    protected bool IsSuccess { get; }
+    public bool IsSuccess { get; }
 
     public bool IsFailure => !IsSuccess;
 
@@ -29,7 +29,7 @@ public class Result
 
     public static Result Failure(Error error) => new(false, error);
 
-    protected static Result<TValue> Failure<TValue>(Error error) =>
+    public static Result<TValue> Failure<TValue>(Error error) =>
         new(default, false, error);
 }
 
