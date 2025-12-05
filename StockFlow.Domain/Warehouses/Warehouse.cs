@@ -1,6 +1,9 @@
-﻿namespace StockFlow.Domain.Warehouses;
+﻿using SharedKernel;
 
-public class Warehouse
+namespace StockFlow.Domain.Warehouses;
+
+public sealed class Warehouse : Entity
 {
-    
+    public required string Name { get; set; }
+    public required string Location { get; set; }
 }
