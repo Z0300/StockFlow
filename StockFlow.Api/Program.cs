@@ -1,41 +1,47 @@
+using System.Reflection;
+using Serilog;
+using StockFlow.Api;
+using StockFlow.Api.Extensions;
+using StockFlow.Application;
+using StockFlow.Infrastructure;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Host.UseSerilog((context, loggerConfig) => 
+    loggerConfig.ReadFrom.Configuration(context.Configuration));
+
 builder.Services.AddOpenApi();
+
+builder.Services.AddSwaggerGenWithAuth();
+
+builder.Services
+    .AddApplication()
+    .AddPresentation()
+    .AddInfrastructure(builder.Configuration);
+
+builder.Services.AddEndpoints(Assembly.GetExecutingAssembly());
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.MapEndpoints();
+
 if (app.Environment.IsDevelopment())
 {
+    app.UseSwaggerWithUi();
     app.MapOpenApi();
+    app.ApplyMigrations();
 }
 
-app.UseHttpsRedirection();
+app.UseRequestContextLogging();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+app.UseSerilogRequestLogging();
 
-app.MapGet("/weatherforecast", () =>
-    {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast");
+app.UseExceptionHandler();
+
+app.UseAuthentication();
+
+app.UseAuthorization();
+
+
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
