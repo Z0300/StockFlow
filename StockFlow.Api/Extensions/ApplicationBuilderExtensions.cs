@@ -5,7 +5,11 @@ public static class ApplicationBuilderExtensions
     public static IApplicationBuilder UseSwaggerWithUi(this WebApplication app)
     {
         app.UseSwagger();
-        app.UseSwaggerUI();
+        app.UseSwaggerUI(o =>
+        {
+            o.SwaggerEndpoint("/swagger/v1/swagger.json", "StockFlow API V1");
+            o.RoutePrefix = string.Empty;
+        });
 
         return app;
     }

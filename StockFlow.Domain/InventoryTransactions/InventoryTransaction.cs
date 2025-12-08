@@ -1,10 +1,11 @@
-﻿using StockFlow.Domain.Enums;
+﻿using SharedKernel;
+using StockFlow.Domain.Enums;
 using StockFlow.Domain.Orders;
 using StockFlow.Domain.Products;
 
 namespace StockFlow.Domain.InventoryTransactions;
 
-public sealed class InventoryTransaction
+public sealed class InventoryTransaction : Entity
 {
     public Guid ProductId { get; set; }
     public Product? Product { get; set; }
