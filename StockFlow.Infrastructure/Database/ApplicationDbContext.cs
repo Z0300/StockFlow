@@ -14,9 +14,9 @@ using StockFlow.Infrastructure.DomainEvents;
 namespace StockFlow.Infrastructure.Database;
 
 public sealed class ApplicationDbContext(
-    DbContextOptions<ApplicationDbContext> options, 
+    DbContextOptions<ApplicationDbContext> options,
     IDomainEventsDispatcher domainEventsDispatcher)
-        : DbContext(options), IApplicationDbContext
+    : DbContext(options), IApplicationDbContext
 {
     public DbSet<User> Users { get; set; }
     public DbSet<Category> Categories { get; set;}
@@ -45,7 +45,7 @@ public sealed class ApplicationDbContext(
         //     - handlers can fail
 
         var result = await base.SaveChangesAsync(cancellationToken);
-
+ 
         await PublishDomainEventsAsync();
 
         return result;
@@ -66,6 +66,7 @@ public sealed class ApplicationDbContext(
             })
             .ToList();
 
+        
         await domainEventsDispatcher.DispatchAsync(domainEvents);
     }
 }

@@ -29,7 +29,6 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwaggerWithUi();
     app.MapOpenApi();
-    app.ApplyMigrations();
 }
 
 app.UseRequestContextLogging();
@@ -42,6 +41,4 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-
-
-app.Run();
+ await app.RunAsync();

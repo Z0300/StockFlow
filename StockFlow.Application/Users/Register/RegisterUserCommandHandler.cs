@@ -1,0 +1,38 @@
+﻿using Microsoft.EntityFrameworkCore;
+using SharedKernel;
+using StockFlow.Application.Abstractions.Authentication;
+using StockFlow.Application.Abstractions.Data;
+using StockFlow.Application.Abstractions.Messaging;
+using StockFlow.Domain.Users;
+
+namespace StockFlow.Application.Users.Register;
+
+internal sealed class RegisterUserCommandHandler(IApplicationDbContext context, IPasswordHasher passwordHasher)
+    : ICommandHandler<RegisterUserCommand, Guid>
+{
+    public async Task<Result<Guid>> Handle(RegisterUserCommand command, CancellationToken cancellationToken)
+    {
+        if (await context.Users.AnyAsync(u => u.Email == command.Email, cancellationToken))
+        {
+            return Result.Failure<Guid>(UserErrors.EmailNotUnique);
+        }
+
+        var user = new User
+        {
+            Id = Guid.NewGuid(),
+            FirstName = command.FirstName,
+            LastName = command.LastName,
+            Email = command.Email,
+            PasswordHash = passwordHasher.Hash(command.Password),
+            Role = command.Role
+        };
+
+        user.Raise(new UserRegisteredDomainEvent(user.Id));
+
+        context.Users.Add(user);
+
+        await context.SaveChangesAsync(cancellationToken);
+
+        return user.Id;
+    }
+}
