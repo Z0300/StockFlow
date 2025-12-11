@@ -14,7 +14,7 @@ internal sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
         
         builder.Property(u => u.Sku).HasMaxLength(15).IsRequired();
         
-        builder.Property(u => u.Price).HasPrecision(255).IsRequired();
+        builder.Property(u => u.Price).HasPrecision(18, 2).IsRequired();
         
         builder.HasOne(u => u.Category)
             .WithMany()

@@ -12,7 +12,7 @@ services:
     image: postgres:17
     container_name: postgres
     environment:
-      - POSTGRES_DB=stock-flow
+      - POSTGRES_DB=stock_flow
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     volumes:
