@@ -20,13 +20,12 @@ internal sealed class PermissionAuthorizationHandler(IServiceScopeFactory servic
             return;
         }
 
-        using var scope = serviceScopeFactory.CreateScope();
+        using IServiceScope scope = serviceScopeFactory.CreateScope();
 
-        var permissionProvider = scope.ServiceProvider.GetRequiredService<PermissionProvider>();
+       
+        Guid userId = context.User.GetUserId();
 
-        var userId = context.User.GetUserId();
-
-        var permissions = await PermissionProvider.GetForUserIdAsync(userId);
+        HashSet<string> permissions = await PermissionProvider.GetForUserIdAsync(userId);
 
         if (permissions.Contains(requirement.Permission))
         {

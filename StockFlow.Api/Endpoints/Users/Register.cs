@@ -1,4 +1,5 @@
-﻿using StockFlow.Api.Extensions;
+﻿using SharedKernel;
+using StockFlow.Api.Extensions;
 using StockFlow.Api.Infrastructure;
 using StockFlow.Application.Abstractions.Messaging;
 using StockFlow.Application.Users.Register;
@@ -17,13 +18,13 @@ internal sealed class Register : IEndpoint
                 CancellationToken cancellationToken) =>
             {
                 var command = new RegisterUserCommand(
-                    request.Email,
                     request.FirstName,
                     request.LastName,
+                     request.Email,
                     request.Password,
                     request.Role);
 
-                var result = await handler.Handle(command, cancellationToken);
+                Result<Guid> result = await handler.Handle(command, cancellationToken);
 
                 return result.Match(Results.Ok, CustomResults.Problem);
             })

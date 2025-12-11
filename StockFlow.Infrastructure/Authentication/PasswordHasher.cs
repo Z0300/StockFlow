@@ -13,19 +13,19 @@ internal sealed class PasswordHasher : IPasswordHasher
 
     public string Hash(string password)
     {
-       var salt = RandomNumberGenerator.GetBytes(SaltSize);
-       var hash = Rfc2898DeriveBytes.Pbkdf2(password, salt, Iterations, Algorithm, HashSize);
+        byte[] salt = RandomNumberGenerator.GetBytes(SaltSize);
+        byte[] hash = Rfc2898DeriveBytes.Pbkdf2(password, salt, Iterations, Algorithm, HashSize);
 
         return $"{Convert.ToHexString(hash)}-{Convert.ToHexString(salt)}";
     }
 
     public bool Verify(string password, string passwordHash)
     {
-        var parts = passwordHash.Split('-');
-        var hash = Convert.FromHexString(parts[0]);
-        var salt = Convert.FromHexString(parts[1]);
+        string[] parts = passwordHash.Split('-');
+        byte[] hash = Convert.FromHexString(parts[0]);
+        byte[] salt = Convert.FromHexString(parts[1]);
 
-        var inputHash = Rfc2898DeriveBytes.Pbkdf2(password, salt, Iterations, Algorithm, HashSize);
+        byte[] inputHash = Rfc2898DeriveBytes.Pbkdf2(password, salt, Iterations, Algorithm, HashSize);
 
         return CryptographicOperations.FixedTimeEquals(hash, inputHash);
     }

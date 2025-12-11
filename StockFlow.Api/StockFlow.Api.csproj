@@ -1,34 +1,39 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-    <PropertyGroup>
-        <TargetFramework>net10.0</TargetFramework>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.0">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="Serilog" Version="4.3.0" />
-        <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
-        <PackageReference Include="Serilog.Sinks.Seq" Version="9.0.0" />
-        <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="10.0.1" />
-        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.0.1" />
-        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.0.1" />
-    </ItemGroup>
+	<PropertyGroup>
+	  <UserSecretsId>f58b6531-8f6f-4271-a34a-90bd8592759d</UserSecretsId>
+	  <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+	  <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
+	</PropertyGroup>
 
-    <ItemGroup>
-      <Content Include="..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
-    </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\StockFlow.Infrastructure\StockFlow.Infrastructure.csproj" />
-    </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
+		<PackageReference Include="Serilog" />
+		<PackageReference Include="Serilog.AspNetCore" />
+		<PackageReference Include="Serilog.Sinks.Console" />
+		<PackageReference Include="Serilog.Sinks.Seq" />
+		<PackageReference Include="Swashbuckle.AspNetCore.Swagger" />
+		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" />
+		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="..\.dockerignore">
+			<Link>.dockerignore</Link>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\StockFlow.Infrastructure\StockFlow.Infrastructure.csproj" />
+	</ItemGroup>
 
 </Project>

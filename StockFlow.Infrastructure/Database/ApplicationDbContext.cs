@@ -44,7 +44,7 @@ public sealed class ApplicationDbContext(
         //     - eventual consistency
         //     - handlers can fail
 
-        var result = await base.SaveChangesAsync(cancellationToken);
+        int result = await base.SaveChangesAsync(cancellationToken);
  
         await PublishDomainEventsAsync();
 
@@ -58,7 +58,7 @@ public sealed class ApplicationDbContext(
             .Select(entry => entry.Entity)
             .SelectMany(entity =>
             {
-                var domainEvents = entity.DomainEvents;
+                List<IDomainEvent> domainEvents = entity.DomainEvents;
 
                 entity.ClearDomainEvents();
 
