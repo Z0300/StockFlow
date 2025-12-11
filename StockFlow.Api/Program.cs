@@ -4,7 +4,7 @@ using StockFlow.Api.Extensions;
 using StockFlow.Application;
 using StockFlow.Infrastructure;
 using Serilog;
-using Serilog.AspNetCore; // Add this using directive
+using Serilog.AspNetCore; 
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -30,11 +30,12 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwaggerWithUi();
     app.MapOpenApi();
+    app.ApplyMigrations();
 }
 
 app.UseRequestContextLogging();
 
-app.UseSerilogRequestLogging(); // This line will now work if Serilog.AspNetCore is referenced
+app.UseSerilogRequestLogging(); 
 
 app.UseExceptionHandler();
 

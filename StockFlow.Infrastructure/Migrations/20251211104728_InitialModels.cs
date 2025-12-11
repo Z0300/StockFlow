@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace StockFlow.Infrastructure.Migrations;
 
 /// <inheritdoc />
-public partial class Initial : Migration
+public partial class InitialModels : Migration
 {
     /// <inheritdoc />
     protected override void Up(MigrationBuilder migrationBuilder)
@@ -101,7 +101,7 @@ public partial class Initial : Migration
                 id = table.Column<Guid>(type: "uuid", nullable: false),
                 name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                 sku = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: false),
-                price = table.Column<decimal>(type: "numeric(255)", precision: 255, nullable: false),
+                price = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
                 category_id = table.Column<Guid>(type: "uuid", nullable: false),
                 warehouse_id = table.Column<Guid>(type: "uuid", nullable: false)
             },

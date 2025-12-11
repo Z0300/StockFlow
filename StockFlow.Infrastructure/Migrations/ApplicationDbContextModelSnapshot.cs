@@ -17,7 +17,7 @@ namespace StockFlow.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.0")
+                .HasAnnotation("ProductVersion", "10.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -183,8 +183,8 @@ namespace StockFlow.Infrastructure.Migrations
                         .HasColumnName("name");
 
                     b.Property<decimal>("Price")
-                        .HasPrecision(255)
-                        .HasColumnType("numeric(255)")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
                         .HasColumnName("price");
 
                     b.Property<string>("Sku")
