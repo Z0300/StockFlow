@@ -13,17 +13,17 @@ internal sealed class DomainEventsDispatcher(IServiceProvider serviceProvider) :
         IEnumerable<IDomainEvent> domainEvents,
         CancellationToken cancellationToken = default)
     {
-        using var scope = serviceProvider.CreateScope();
-        foreach (var domainEvent in domainEvents)
+        using IServiceScope scope = serviceProvider.CreateScope();
+        foreach (IDomainEvent domainEvent in domainEvents)
         {
-            var domainEventType = domainEvent.GetType();
-            var handlerType = HandlerTypeDictionary.GetOrAdd(
+            Type domainEventType = domainEvent.GetType();
+            Type handlerType = HandlerTypeDictionary.GetOrAdd(
                 domainEventType,
                 et => typeof(IDomainEventHandler<>).MakeGenericType(et));
 
-            var handlers = scope.ServiceProvider.GetServices(handlerType);
+            IEnumerable<object?> handlers = scope.ServiceProvider.GetServices(handlerType);
 
-            foreach (var handler in handlers)
+            foreach (object? handler in handlers)
             {
                 if (handler is null)
                 {
@@ -43,7 +43,7 @@ internal sealed class DomainEventsDispatcher(IServiceProvider serviceProvider) :
 
         public static HandlerWrapper Create(object handler, Type domainEventType)
         {
-            var wrapperType = WrapperTypeDictionary.GetOrAdd(
+            Type wrapperType = WrapperTypeDictionary.GetOrAdd(
                 domainEventType,
                 et => typeof(HandlerWrapper<>).MakeGenericType(et));
             

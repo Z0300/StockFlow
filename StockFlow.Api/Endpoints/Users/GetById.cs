@@ -1,4 +1,5 @@
-﻿using StockFlow.Api.Extensions;
+﻿using SharedKernel;
+using StockFlow.Api.Extensions;
 using StockFlow.Api.Infrastructure;
 using StockFlow.Application.Abstractions.Messaging;
 using StockFlow.Application.Users.GetUserById;
@@ -16,7 +17,7 @@ internal sealed class GetById : IEndpoint
             {
                 var query = new GetUserByIdQuery(userId);
 
-                var result = await handler.Handle(query, cancellationToken);
+                Result<UserResponse> result = await handler.Handle(query, cancellationToken);
 
                 return result.Match(Results.Ok, CustomResults.Problem);
             })

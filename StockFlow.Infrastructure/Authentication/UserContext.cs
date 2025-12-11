@@ -5,7 +5,9 @@ namespace StockFlow.Infrastructure.Authentication;
 
 internal sealed class UserContext(IHttpContextAccessor httpContextAccessor) : IUserContext
 {
-    private sealed class UserContextUnavailableException() : Exception("User context is unavailable");
+#pragma warning disable S3871 // Exception types should be "public"
+    public sealed class UserContextUnavailableException() : Exception("User context is unavailable");
+#pragma warning restore S3871 // Exception types should be "public"
 
     public Guid UserId =>
         httpContextAccessor

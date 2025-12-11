@@ -1,11 +1,12 @@
 using System.Reflection;
-using Serilog;
 using StockFlow.Api;
 using StockFlow.Api.Extensions;
 using StockFlow.Application;
 using StockFlow.Infrastructure;
+using Serilog;
+using Serilog.AspNetCore; // Add this using directive
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSerilog((context, loggerConfig) => 
     loggerConfig.ReadFrom.Configuration(context.Configuration));
@@ -21,7 +22,7 @@ builder.Services
 
 builder.Services.AddEndpoints(Assembly.GetExecutingAssembly());
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 app.MapEndpoints();
 
@@ -33,7 +34,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseRequestContextLogging();
 
-app.UseSerilogRequestLogging();
+app.UseSerilogRequestLogging(); // This line will now work if Serilog.AspNetCore is referenced
 
 app.UseExceptionHandler();
 
