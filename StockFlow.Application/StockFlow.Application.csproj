@@ -14,4 +14,10 @@
 		<PackageReference Include="Serilog.AspNetCore" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Categories\GetById\" />
+	  <Folder Include="Categories\GetAll\" />
+	  <Folder Include="Categories\Update\" />
+	</ItemGroup>
+
 </Project>
