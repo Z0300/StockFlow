@@ -4,11 +4,11 @@ namespace StockFlow.Domain.Categories;
 
 public static class CategoryErrors
 {
-    public static Error AlreadyCompleted(Guid todoItemId) => Error.Problem(
-        "Category.AlreadyCompleted",
-        $"The todo item with Id = '{todoItemId}' is already completed.");
+    public static Error NameNotUnique => Error.Conflict(
+        "Category.NameNotUnique",
+        $"The name provided is not unique.");
 
-    public static Error NotFound(Guid todoItemId) => Error.NotFound(
-        "TodoItems.NotFound",
-        $"The to-do item with the Id = '{todoItemId}' was not found");
+    public static Error NotFound(Guid categoryId) => Error.NotFound(
+        "Category.NotFound",
+        $"The category item with the Id = '{categoryId}' was not found");
 }
