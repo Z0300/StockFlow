@@ -21,7 +21,8 @@ internal sealed class GetById : IEndpoint
 
                 return result.Match(Results.Ok, CustomResults.Problem);
             })
-            .HasPermission(Permissions.UsersAccess)
+            //.HasPermission(Permissions.UsersAccess)
+            .RequireAuthorization() 
             .WithTags(Tags.Users);
     }
 }
