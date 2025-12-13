@@ -1,4 +1,8 @@
-﻿namespace StockFlow.Api.Extensions;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
+using Microsoft.OpenApi;
+
+namespace StockFlow.Api.Extensions;
 
 internal static class ServiceCollectionExtensions
 {
@@ -8,35 +12,18 @@ internal static class ServiceCollectionExtensions
         {
             o.CustomSchemaIds(id => id.FullName?.Replace('+', '-'));
 
-            // Temporarily commented out
-            //var securityScheme = new OpenApiSecurityScheme
-            //{
-            //    Name = "JWT Authentication",
-            //    Description = "Enter your JWT token in this field",
-            //    In = ParameterLocation.Header,
-            //    Type = SecuritySchemeType.Http,
-            //    Scheme = JwtBearerDefaults.AuthenticationScheme,
-            //    BearerFormat = "JWT"
-            //};
+            o.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
+            {
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT",
+                Description = "JWT Authorization header using the Bearer scheme."
+            });
 
-            //o.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, securityScheme);
-
-            //var securityRequirement = new OpenApiSecurityRequirement
-            //{
-            //    {
-            //        new OpenApiSecurityScheme
-            //        {
-            //            Reference = new OpenApiReference
-            //            {
-            //                Type = ReferenceType.SecurityScheme,
-            //                Id = JwtBearerDefaults.AuthenticationScheme
-            //            }
-            //        },
-            //        []
-            //    }
-            //};
-
-            //o.AddSecurityRequirement(securityRequirement);
+            o.AddSecurityRequirement(d => new OpenApiSecurityRequirement
+            {
+                [new OpenApiSecuritySchemeReference("bearer", d)] = []
+            });
         });
 
         return services;
