@@ -11,13 +11,13 @@ namespace StockFlow.Application.Categories.Create;
 
 internal sealed class CreateCategoryCommandHandler(
     IApplicationDbContext context)
-    : ICommandHandler<CreateCategoryCommand>
+    : ICommandHandler<CreateCategoryCommand, Guid>
 {
-    public async Task<Result> Handle(CreateCategoryCommand command, CancellationToken cancellationToken)
+    public async Task<Result<Guid>> Handle(CreateCategoryCommand command, CancellationToken cancellationToken)
     {
         if (await context.Categories.AnyAsync(c => c.Name == command.Name, cancellationToken))
         {
-            return Result.Failure(CategoryErrors.NameNotUnique);
+            return Result.Failure<Guid>(CategoryErrors.NameNotUnique);
         }
 
         var category = new Category
@@ -30,6 +30,6 @@ internal sealed class CreateCategoryCommandHandler(
         context.Categories.Add(category);
         await context.SaveChangesAsync(cancellationToken);
 
-        return Result.Success();
+        return category.Id;
     }
 }

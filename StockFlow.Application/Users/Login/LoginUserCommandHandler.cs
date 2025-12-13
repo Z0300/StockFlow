@@ -8,31 +8,19 @@ using SharedKernel;
 using StockFlow.Application.Abstractions.Authentication;
 using StockFlow.Application.Abstractions.Behaviors;
 using StockFlow.Application.Abstractions.Data;
+using StockFlow.Application.Abstractions.Messaging;
 using StockFlow.Domain.Users;
 
 namespace StockFlow.Application.Users.Login;
 
-internal sealed class LoginUserCommandHandler : CommandHandlerBase<LoginUserCommand, string>
+internal sealed class LoginUserCommandHandler(
+    IApplicationDbContext context,
+    IPasswordHasher passwordHasher,
+    ITokenProvider tokenProvider) : ICommandHandler<LoginUserCommand, string>
 {
-    private readonly IApplicationDbContext _context;
-    private readonly IPasswordHasher _passwordHasher;
-    private readonly ITokenProvider _tokenProvider;
-
-    public LoginUserCommandHandler(
-        IEnumerable<IValidator<LoginUserCommand>> validators,
-        IApplicationDbContext context,
-         IPasswordHasher passwordHasher,
-         ITokenProvider tokenProvider
-        ) : base(validators)
+    public async Task<Result<string>> Handle(LoginUserCommand command, CancellationToken cancellationToken)
     {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-        _passwordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));
-        _tokenProvider = tokenProvider ?? throw new ArgumentNullException(nameof(tokenProvider));
-    }
-
-    protected override async Task<Result<string>> HandleCore(LoginUserCommand command, CancellationToken cancellationToken)
-    {
-        User? user = await _context.Users
+        User? user = await context.Users
             .AsNoTracking()
             .SingleOrDefaultAsync(u => u.Email == command.Email, cancellationToken);
 
@@ -41,18 +29,16 @@ internal sealed class LoginUserCommandHandler : CommandHandlerBase<LoginUserComm
             return Result.Failure<string>(UserErrors.NotFoundByEmail);
         }
 
-        bool verified = _passwordHasher.Verify(command.Password, user.PasswordHash);
+        bool verified = passwordHasher.Verify(command.Password, user.PasswordHash);
 
         if (!verified)
         {
             return Result.Failure<string>(UserErrors.NotFoundByEmail);
         }
 
-        string token = _tokenProvider.Create(user);
+        string token = tokenProvider.Create(user);
 
         return token;
-
     }
-
 }
 
