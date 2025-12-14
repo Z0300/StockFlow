@@ -9,5 +9,4 @@ public sealed class User : Entity
     public required string LastName { get; set; }
     public required string Email { get; set; }
     public required string PasswordHash { get; set; }
-    public Role Role { get; set; }  
 }

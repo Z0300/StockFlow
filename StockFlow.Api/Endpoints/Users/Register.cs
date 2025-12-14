@@ -9,7 +9,7 @@ namespace StockFlow.Api.Endpoints.Users;
 
 internal sealed class Register : IEndpoint
 {
-    private sealed record Request(string Email, string FirstName, string LastName, string Password, Role Role);
+    private sealed record Request(string Email, string FirstName, string LastName, string Password);
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
         app.MapPost("users/register", async (
@@ -21,8 +21,7 @@ internal sealed class Register : IEndpoint
                     request.FirstName,
                     request.LastName,
                      request.Email,
-                    request.Password,
-                    request.Role);
+                    request.Password);
 
                 Result<Guid> result = await handler.Handle(command, cancellationToken);
 

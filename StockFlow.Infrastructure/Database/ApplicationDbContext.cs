@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 using StockFlow.Application.Abstractions.Data;
+using StockFlow.Domain.Auth;
 using StockFlow.Domain.Categories;
 using StockFlow.Domain.InventoryTransactions;
 using StockFlow.Domain.OrderItems;
@@ -26,6 +27,9 @@ public sealed class ApplicationDbContext(
     public DbSet<Product> Products { get; set;}
     public DbSet<Supplier> Suppliers { get;set; }
     public DbSet<Warehouse> Warehouses { get; set;}
+    public DbSet<Role> Roles { get; set; }
+    public DbSet<Permission> Permissions { get; set; }
+    public DbSet<RolePermission> RolePermissions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
