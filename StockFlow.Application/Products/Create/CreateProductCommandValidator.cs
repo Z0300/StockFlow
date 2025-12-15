@@ -5,9 +5,9 @@ using FluentValidation;
 
 namespace StockFlow.Application.Products.Create;
 
-internal sealed class ProductCommandValidator : AbstractValidator<CreateProductCommand>
+internal sealed class CreateProductCommandValidator : AbstractValidator<CreateProductCommand>
 {
-    public ProductCommandValidator()
+    public CreateProductCommandValidator()
     {
         RuleFor(x => x.Name).NotEmpty();
         RuleFor(x => x.Sku).NotEmpty();

@@ -8,10 +8,10 @@ namespace StockFlow.Domain.Products;
 public static class ProductErrors
 {
     public static Error NameNotUnique => Error.Conflict(
-        "Product.NameNotUnique",
+        "Products.NameNotUnique",
         $"The name provided is not unique.");
 
     public static Error NotFound(Guid productId) => Error.NotFound(
-      "Product.NotFound",
+      "Products.NotFound",
       $"The product item with the Id = '{productId}' was not found");
 }
