@@ -16,6 +16,7 @@ internal sealed class GetCategoryByIdQueryHandler(IApplicationDbContext context)
     public async Task<Result<CategoryResponse>> Handle(GetCategoryByIdQuery query, CancellationToken cancellationToken)
     {
        CategoryResponse? category = await context.Categories
+            .AsNoTracking()
             .Where(category => category.Id == query.Id)
             .Select(category => new CategoryResponse
             {
