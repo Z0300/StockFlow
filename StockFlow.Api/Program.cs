@@ -1,10 +1,14 @@
 using System.Reflection;
+using Serilog;
+using Serilog.AspNetCore;
 using StockFlow.Api;
 using StockFlow.Api.Extensions;
 using StockFlow.Application;
+using StockFlow.Application.Abstractions.Authentication;
+using StockFlow.Domain.Users;
 using StockFlow.Infrastructure;
-using Serilog;
-using Serilog.AspNetCore; 
+using StockFlow.Infrastructure.Database;
+using StockFlow.Infrastructure.Seeders;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +27,14 @@ builder.Services
 builder.Services.AddEndpoints(Assembly.GetExecutingAssembly());
 
 WebApplication app = builder.Build();
+
+using (IServiceScope scope = app.Services.CreateScope())
+{
+    ApplicationDbContext db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    IPasswordHasher hasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher>();
+
+    await DbSeeder.SeedAdminAsync(db, hasher);
+}
 
 app.MapEndpoints();
 
