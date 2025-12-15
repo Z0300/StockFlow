@@ -20,13 +20,13 @@ public sealed class ApplicationDbContext(
     : DbContext(options), IApplicationDbContext
 {
     public DbSet<User> Users { get; set; }
-    public DbSet<Category> Categories { get; set;}
-    public DbSet<InventoryTransaction> InventoryTransactions { get; set;}
+    public DbSet<Category> Categories { get; set; }
+    public DbSet<InventoryTransaction> InventoryTransactions { get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
-    public DbSet<Order> Orders { get; set;}
-    public DbSet<Product> Products { get; set;}
-    public DbSet<Supplier> Suppliers { get;set; }
-    public DbSet<Warehouse> Warehouses { get; set;}
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<Product> Products { get; set; }
+    public DbSet<Supplier> Suppliers { get; set; }
+    public DbSet<Warehouse> Warehouses { get; set; }
     public DbSet<Role> Roles { get; set; }
     public DbSet<Permission> Permissions { get; set; }
     public DbSet<RolePermission> RolePermissions { get; set; }
@@ -49,12 +49,12 @@ public sealed class ApplicationDbContext(
         //     - handlers can fail
 
         int result = await base.SaveChangesAsync(cancellationToken);
- 
+
         await PublishDomainEventsAsync();
 
         return result;
     }
-    
+
     private async Task PublishDomainEventsAsync()
     {
         var domainEvents = ChangeTracker
@@ -70,7 +70,7 @@ public sealed class ApplicationDbContext(
             })
             .ToList();
 
-        
+
         await domainEventsDispatcher.DispatchAsync(domainEvents);
     }
 }

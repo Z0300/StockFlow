@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using StockFlow.Domain.Auth;
 using StockFlow.Domain.Categories;
 using StockFlow.Domain.InventoryTransactions;
 using StockFlow.Domain.OrderItems;
@@ -20,6 +21,9 @@ public interface IApplicationDbContext
     DbSet<Product> Products { get; }
     DbSet<Supplier> Suppliers { get; }
     DbSet<Warehouse> Warehouses { get; }
-    
+    DbSet<Permission> Permissions { get; }
+    DbSet<Role> Roles { get; }
+    DbSet<RolePermission> RolePermissions { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

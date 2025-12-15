@@ -1,4 +1,5 @@
 ﻿using SharedKernel;
+using StockFlow.Domain.Auth;
 using StockFlow.Domain.Enums;
 
 namespace StockFlow.Domain.Users;
