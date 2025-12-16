@@ -6,4 +6,5 @@ public static class Tags
     public const string Categories = "Categories";
     public const string Products = "Products";
     public const string Warehouses = "Warehouses";
+    public const string Suppliers = "Suppliers";
 }
