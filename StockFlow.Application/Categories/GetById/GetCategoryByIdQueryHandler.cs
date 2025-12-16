@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 using StockFlow.Application.Abstractions.Data;
 using StockFlow.Application.Abstractions.Messaging;
@@ -15,16 +12,16 @@ internal sealed class GetCategoryByIdQueryHandler(IApplicationDbContext context)
 {
     public async Task<Result<CategoryResponse>> Handle(GetCategoryByIdQuery query, CancellationToken cancellationToken)
     {
-       CategoryResponse? category = await context.Categories
-            .AsNoTracking()
-            .Where(category => category.Id == query.Id)
-            .Select(category => new CategoryResponse
-            {
-                Id = category.Id,
-                Name = category.Name,
-                Description = category.Description
-            })
-            .SingleOrDefaultAsync(cancellationToken);
+        CategoryResponse? category = await context.Categories
+             .AsNoTracking()
+             .Where(category => category.Id == query.Id)
+             .Select(category => new CategoryResponse
+             {
+                 Id = category.Id,
+                 Name = category.Name,
+                 Description = category.Description
+             })
+             .SingleOrDefaultAsync(cancellationToken);
 
         if (category is null)
         {

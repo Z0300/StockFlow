@@ -3,7 +3,6 @@ using StockFlow.Api.Extensions;
 using StockFlow.Api.Infrastructure;
 using StockFlow.Application.Abstractions.Messaging;
 using StockFlow.Application.Users.Register;
-using StockFlow.Domain.Enums;
 
 namespace StockFlow.Api.Endpoints.Users;
 

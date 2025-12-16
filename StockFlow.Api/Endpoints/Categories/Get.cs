@@ -1,4 +1,8 @@
 ﻿
+using SharedKernel;
+using StockFlow.Api.Extensions;
+using StockFlow.Api.Infrastructure;
+using StockFlow.Application.Abstractions.Messaging;
 using StockFlow.Application.Categories.Get;
 using StockFlow.Application.Categories.Shared;
 

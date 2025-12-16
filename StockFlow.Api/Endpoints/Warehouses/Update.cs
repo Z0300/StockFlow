@@ -1,4 +1,8 @@
-﻿using StockFlow.Application.Warehouses.Update;
+﻿using SharedKernel;
+using StockFlow.Api.Extensions;
+using StockFlow.Api.Infrastructure;
+using StockFlow.Application.Abstractions.Messaging;
+using StockFlow.Application.Warehouses.Update;
 
 namespace StockFlow.Api.Endpoints.Warehouses;
 

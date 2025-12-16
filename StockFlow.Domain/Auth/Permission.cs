@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace StockFlow.Domain.Auth;
+﻿namespace StockFlow.Domain.Auth;
 
 public sealed class Permission
 {

@@ -9,14 +9,14 @@ internal sealed class InventoryTransactionConfiguration : IEntityTypeConfigurati
     public void Configure(EntityTypeBuilder<InventoryTransaction> builder)
     {
         builder.HasKey(u => u.Id);
-        
+
         builder.HasOne(u => u.Product)
             .WithMany()
             .HasForeignKey(u => u.ProductId);
-        
+
         builder.HasOne(u => u.Order)
             .WithMany()
             .HasForeignKey(u => u.OrderId);
-        
+
     }
 }

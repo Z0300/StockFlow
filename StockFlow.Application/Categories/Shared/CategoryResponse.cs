@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace StockFlow.Application.Categories.Shared;
+﻿namespace StockFlow.Application.Categories.Shared;
 
 public sealed class CategoryResponse
 {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace StockFlow.Application.Warehouses.Shared;
+﻿namespace StockFlow.Application.Warehouses.Shared;
 
 public sealed class WarehouseResponse
 {

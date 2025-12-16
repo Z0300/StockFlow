@@ -7,7 +7,7 @@ internal sealed class UserRegisteredDomainEventHandler : IDomainEventHandler<Use
 {
     public Task HandleAsync(UserRegisteredDomainEvent domainEvent, CancellationToken cancellationToken)
     {
-        
+
         return Task.CompletedTask;
     }
 }

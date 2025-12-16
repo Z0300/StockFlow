@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Options;
-using Microsoft.OpenApi;
+﻿using Microsoft.OpenApi;
 
 namespace StockFlow.Api.Extensions;
 

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using StockFlow.Domain.Auth;
 using Permission = StockFlow.Domain.Enums.Permission;
@@ -16,7 +13,7 @@ internal sealed class RolePermissionConfiguration
         builder.HasKey(x => new { x.RoleId, x.PermissionId });
 
         builder.HasData(
-                // All permissions for Admin
+            // All permissions for Admin
             Enum.GetValues<Permission>()
                 .Select(p => Create(Role.Admin, p))
                 // Inventory Manager permissions
@@ -61,7 +58,7 @@ internal sealed class RolePermissionConfiguration
                     Create(Role.Auditor, Permission.AuditExportLogs)
                     ])
                 // Procurement permissions
-                .Concat([      
+                .Concat([
                     Create(Role.Procurement, Permission.ProcurementViewSupplier),
                     Create(Role.Procurement, Permission.ProcurementCreateSupplier),
                     Create(Role.Procurement, Permission.ProcurementUpdateSupplier),
