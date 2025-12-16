@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using FluentValidation;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 using StockFlow.Application.Abstractions.Authentication;
-using StockFlow.Application.Abstractions.Behaviors;
 using StockFlow.Application.Abstractions.Data;
 using StockFlow.Application.Abstractions.Messaging;
 using StockFlow.Domain.Users;

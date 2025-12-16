@@ -1,17 +1,13 @@
 using System.Reflection;
 using Serilog;
-using Serilog.AspNetCore;
 using StockFlow.Api;
 using StockFlow.Api.Extensions;
 using StockFlow.Application;
-using StockFlow.Application.Abstractions.Authentication;
-using StockFlow.Domain.Users;
 using StockFlow.Infrastructure;
-using StockFlow.Infrastructure.Database;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-builder.Host.UseSerilog((context, loggerConfig) => 
+builder.Host.UseSerilog((context, loggerConfig) =>
     loggerConfig.ReadFrom.Configuration(context.Configuration));
 
 builder.Services.AddOpenApi();
@@ -39,7 +35,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseRequestContextLogging();
 
-app.UseSerilogRequestLogging(); 
+app.UseSerilogRequestLogging();
 
 app.UseExceptionHandler();
 
@@ -47,4 +43,4 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
- await app.RunAsync();
+await app.RunAsync();

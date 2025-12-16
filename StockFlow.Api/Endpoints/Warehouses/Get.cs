@@ -1,5 +1,8 @@
-﻿using StockFlow.Application.Warehouses.Get;
-using StockFlow.Application.Warehouses.GetById;
+﻿using SharedKernel;
+using StockFlow.Api.Extensions;
+using StockFlow.Api.Infrastructure;
+using StockFlow.Application.Abstractions.Messaging;
+using StockFlow.Application.Warehouses.Get;
 using StockFlow.Application.Warehouses.Shared;
 
 namespace StockFlow.Api.Endpoints.Warehouses;
@@ -17,5 +20,5 @@ internal sealed class Get : IEndpoint
                 return result.Match(Results.Ok, CustomResults.Problem);
             })
             .WithTags(Tags.Warehouses);
-    }   
+    }
 }

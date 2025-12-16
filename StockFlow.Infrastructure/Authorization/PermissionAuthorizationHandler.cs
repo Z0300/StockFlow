@@ -22,7 +22,7 @@ internal sealed class PermissionAuthorizationHandler(IServiceScopeFactory servic
 
         using IServiceScope scope = serviceScopeFactory.CreateScope();
 
-       
+
         Guid userId = context.User.GetUserId();
 
         HashSet<string> permissions = await PermissionProvider.GetForUserIdAsync(userId);

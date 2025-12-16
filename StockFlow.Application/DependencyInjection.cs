@@ -8,7 +8,7 @@ namespace StockFlow.Application;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddApplication(this IServiceCollection services)  
+    public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services.Scan(scan => scan.FromAssembliesOf(typeof(DependencyInjection))
             .AddClasses(classes => classes.AssignableTo(typeof(IQueryHandler<,>)), publicOnly: false)
@@ -37,4 +37,4 @@ public static class DependencyInjection
 
         return services;
     }
-}   
+}

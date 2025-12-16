@@ -12,7 +12,7 @@ public sealed class Product : Entity
 
     public Guid CategoryId { get; set; }
     public Category? Category { get; set; }
-    
+
     public Guid WarehouseId { get; set; }
     public Warehouse? Warehouse { get; set; }
 }

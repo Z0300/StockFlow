@@ -10,7 +10,7 @@ public sealed class Order : Entity
 {
     public Guid WarehouseId { get; set; }
     public Warehouse? Warehouse { get; set; }
-    
+
     public Guid SupplierId { get; set; }
     public Supplier? Supplier { get; set; }
 

@@ -1,4 +1,8 @@
-﻿using StockFlow.Application.Warehouses.Delete;
+﻿using SharedKernel;
+using StockFlow.Api.Extensions;
+using StockFlow.Api.Infrastructure;
+using StockFlow.Application.Abstractions.Messaging;
+using StockFlow.Application.Warehouses.Delete;
 
 namespace StockFlow.Api.Endpoints.Warehouses;
 
