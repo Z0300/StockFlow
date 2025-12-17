@@ -12,14 +12,14 @@ internal sealed class Get : IEndpoint
 {
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-       app.MapGet("suppliers", async (
-              IQueryHandler<GetSupplierQuery, List<SupplierResponse>> handler,
-              CancellationToken cancellationToken) =>
-       {
-           var query = new GetSupplierQuery();
-           Result<List<SupplierResponse>> result = await handler.Handle(query, cancellationToken);
-           return result.Match(Results.Ok, CustomResults.Problem);
-       })
-          .WithTags(Tags.Suppliers);
+        app.MapGet("suppliers", async (
+               IQueryHandler<GetSupplierQuery, List<SupplierResponse>> handler,
+               CancellationToken cancellationToken) =>
+        {
+            var query = new GetSupplierQuery();
+            Result<List<SupplierResponse>> result = await handler.Handle(query, cancellationToken);
+            return result.Match(Results.Ok, CustomResults.Problem);
+        })
+           .WithTags(Tags.Suppliers);
     }
 }
