@@ -1,5 +1,5 @@
 ﻿using SharedKernel;
 
-namespace StockFlow.Domain.Users;
+namespace StockFlow.Domain.DomainEvents;
 
 public sealed record UserRegisteredDomainEvent(Guid UserId) : IDomainEvent;

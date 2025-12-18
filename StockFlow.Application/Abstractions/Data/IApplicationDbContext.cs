@@ -1,13 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using StockFlow.Domain.Auth;
-using StockFlow.Domain.Categories;
-using StockFlow.Domain.InventoryTransactions;
-using StockFlow.Domain.OrderItems;
-using StockFlow.Domain.Orders;
-using StockFlow.Domain.Products;
-using StockFlow.Domain.Suppliers;
-using StockFlow.Domain.Users;
-using StockFlow.Domain.Warehouses;
+using StockFlow.Domain.Entities;
 
 namespace StockFlow.Application.Abstractions.Data;
 
@@ -15,7 +7,7 @@ public interface IApplicationDbContext
 {
     DbSet<User> Users { get; }
     DbSet<Category> Categories { get; }
-    DbSet<InventoryTransaction> InventoryTransactions { get; }
+    DbSet<Transaction> Transactions { get; }
     DbSet<OrderItem> OrderItems { get; }
     DbSet<Order> Orders { get; }
     DbSet<Product> Products { get; }

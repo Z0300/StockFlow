@@ -1,15 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SharedKernel;
 using StockFlow.Application.Abstractions.Data;
-using StockFlow.Domain.Auth;
-using StockFlow.Domain.Categories;
-using StockFlow.Domain.InventoryTransactions;
-using StockFlow.Domain.OrderItems;
-using StockFlow.Domain.Orders;
-using StockFlow.Domain.Products;
-using StockFlow.Domain.Suppliers;
-using StockFlow.Domain.Users;
-using StockFlow.Domain.Warehouses;
+using StockFlow.Domain.Entities;
 using StockFlow.Infrastructure.DomainEvents;
 
 namespace StockFlow.Infrastructure.Database;
@@ -21,7 +13,7 @@ public sealed class ApplicationDbContext(
 {
     public DbSet<User> Users { get; set; }
     public DbSet<Category> Categories { get; set; }
-    public DbSet<InventoryTransaction> InventoryTransactions { get; set; }
+    public DbSet<Transaction> Transactions { get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<Product> Products { get; set; }

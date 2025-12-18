@@ -1,7 +1,6 @@
 ﻿using SharedKernel;
-using StockFlow.Domain.Users;
 
-namespace StockFlow.Domain.Auth;
+namespace StockFlow.Domain.Entities;
 
 public sealed class Role : Enumeration<Role>
 {

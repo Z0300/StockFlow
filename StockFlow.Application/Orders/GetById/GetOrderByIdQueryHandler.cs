@@ -2,7 +2,7 @@
 using SharedKernel;
 using StockFlow.Application.Abstractions.Data;
 using StockFlow.Application.Abstractions.Messaging;
-using StockFlow.Domain.Orders;
+using StockFlow.Domain.DomainErrors;
 
 namespace StockFlow.Application.Orders.GetById;
 

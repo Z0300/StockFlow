@@ -4,7 +4,8 @@ using SharedKernel;
 using StockFlow.Application.Abstractions.Authentication;
 using StockFlow.Application.Abstractions.Data;
 using StockFlow.Application.Abstractions.Messaging;
-using StockFlow.Domain.Users;
+using StockFlow.Domain.DomainErrors;
+using StockFlow.Domain.Entities;
 
 namespace StockFlow.Application.Users.Login;
 

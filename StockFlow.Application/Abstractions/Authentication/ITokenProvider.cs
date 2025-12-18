@@ -1,4 +1,4 @@
-﻿using StockFlow.Domain.Users;
+﻿using StockFlow.Domain.Entities;
 
 namespace StockFlow.Application.Abstractions.Authentication;
 

@@ -1,6 +1,6 @@
 ﻿using SharedKernel;
 
-namespace StockFlow.Domain.Users;
+namespace StockFlow.Domain.DomainErrors;
 
 public static class UserErrors
 {

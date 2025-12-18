@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using StockFlow.Domain.Users;
+using StockFlow.Domain.Entities;
 
 namespace StockFlow.Infrastructure.Configurations;
 

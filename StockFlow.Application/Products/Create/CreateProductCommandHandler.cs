@@ -2,7 +2,8 @@
 using SharedKernel;
 using StockFlow.Application.Abstractions.Data;
 using StockFlow.Application.Abstractions.Messaging;
-using StockFlow.Domain.Products;
+using StockFlow.Domain.DomainErrors;
+using StockFlow.Domain.Entities;
 
 namespace StockFlow.Application.Products.Create;
 

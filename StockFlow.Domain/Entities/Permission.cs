@@ -1,4 +1,4 @@
-﻿namespace StockFlow.Domain.Auth;
+﻿namespace StockFlow.Domain.Entities;
 
 public sealed class Permission
 {

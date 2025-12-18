@@ -1,6 +1,6 @@
 ﻿using SharedKernel;
 
-namespace StockFlow.Domain.Suppliers;
+namespace StockFlow.Domain.Entities;
 
 public sealed class Supplier : Entity
 {

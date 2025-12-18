@@ -1,6 +1,6 @@
 ﻿using SharedKernel;
 
-namespace StockFlow.Domain.Products;
+namespace StockFlow.Domain.DomainErrors;
 
 public static class ProductErrors
 {
