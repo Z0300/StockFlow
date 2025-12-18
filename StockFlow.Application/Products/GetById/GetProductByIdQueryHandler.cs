@@ -26,12 +26,6 @@ internal sealed class GetProductByIdQueryHandler(IApplicationDbContext context)
                     Id = product.Category != null ? product.Category.Id : Guid.Empty,
                     Name = product.Category != null ? product.Category.Name : string.Empty,
                     Description = product.Category != null ? product.Category.Description : string.Empty
-                },
-                Warehouse = new WarehouseResponse
-                {
-                    Id = product.Warehouse != null ? product.Warehouse.Id : Guid.Empty,
-                    Name = product.Warehouse != null ? product.Warehouse.Name : string.Empty,
-                    Location = product.Warehouse != null ? product.Warehouse.Location : string.Empty
                 }
             })
             .SingleOrDefaultAsync(cancellationToken);

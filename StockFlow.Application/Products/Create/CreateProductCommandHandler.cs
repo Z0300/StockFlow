@@ -22,8 +22,7 @@ internal sealed class CreateProductCommandHandler(IApplicationDbContext context)
             Name = command.Name,
             Sku = command.Sku,
             Price = command.Price,
-            CategoryId = command.CategoryId,
-            WarehouseId = command.WarehouseId
+            CategoryId = command.CategoryId
         };
 
         context.Products.Add(product);

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using StockFlow.Infrastructure.Database;
@@ -11,9 +12,11 @@ using StockFlow.Infrastructure.Database;
 namespace StockFlow.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251217123802_AddTransactionId")]
+    partial class AddTransactionId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -887,10 +890,6 @@ namespace StockFlow.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uuid")
                         .HasColumnName("order_id");
@@ -903,10 +902,9 @@ namespace StockFlow.Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("quantity_change");
 
-                    b.Property<string>("Reason")
-                        .HasMaxLength(512)
-                        .HasColumnType("character varying(512)")
-                        .HasColumnName("reason");
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("timestamp");
 
                     b.Property<Guid>("TransactionId")
                         .HasColumnType("uuid")
@@ -916,15 +914,6 @@ namespace StockFlow.Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("transaction_type");
 
-                    b.Property<decimal?>("UnitCost")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)")
-                        .HasColumnName("unit_cost");
-
-                    b.Property<Guid>("WarehouseId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("warehouse_id");
-
                     b.HasKey("Id")
                         .HasName("pk_inventory_transactions");
 
@@ -933,9 +922,6 @@ namespace StockFlow.Infrastructure.Migrations
 
                     b.HasIndex("ProductId")
                         .HasDatabaseName("ix_inventory_transactions_product_id");
-
-                    b.HasIndex("WarehouseId")
-                        .HasDatabaseName("ix_inventory_transactions_warehouse_id");
 
                     b.ToTable("inventory_transactions", (string)null);
                 });
@@ -1043,11 +1029,18 @@ namespace StockFlow.Infrastructure.Migrations
                         .HasColumnType("character varying(15)")
                         .HasColumnName("sku");
 
+                    b.Property<Guid>("WarehouseId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("warehouse_id");
+
                     b.HasKey("Id")
                         .HasName("pk_products");
 
                     b.HasIndex("CategoryId")
                         .HasDatabaseName("ix_products_category_id");
+
+                    b.HasIndex("WarehouseId")
+                        .HasDatabaseName("ix_products_warehouse_id");
 
                     b.ToTable("products", (string)null);
                 });
@@ -1192,18 +1185,9 @@ namespace StockFlow.Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_inventory_transactions_products_product_id");
 
-                    b.HasOne("StockFlow.Domain.Warehouses.Warehouse", "Warehouse")
-                        .WithMany()
-                        .HasForeignKey("WarehouseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_inventory_transactions_warehouses_warehouse_id");
-
                     b.Navigation("Order");
 
                     b.Navigation("Product");
-
-                    b.Navigation("Warehouse");
                 });
 
             modelBuilder.Entity("StockFlow.Domain.OrderItems.OrderItem", b =>
@@ -1253,7 +1237,16 @@ namespace StockFlow.Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_products_categories_category_id");
 
+                    b.HasOne("StockFlow.Domain.Warehouses.Warehouse", "Warehouse")
+                        .WithMany()
+                        .HasForeignKey("WarehouseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_products_warehouses_warehouse_id");
+
                     b.Navigation("Category");
+
+                    b.Navigation("Warehouse");
                 });
 
             modelBuilder.Entity("StockFlow.Domain.Orders.Order", b =>

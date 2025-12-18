@@ -17,8 +17,7 @@ internal sealed class GetProductQueryHandler(IApplicationDbContext context)
                 Id = product.Id,
                 Name = product.Name,
                 Price = product.Price,
-                Category = product.Category != null ? product.Category.Name : string.Empty,
-                Warehouse = product.Warehouse != null ? product.Warehouse.Name : string.Empty
+                Category = product.Category != null ? product.Category.Name : string.Empty
             })
             .ToListAsync(cancellationToken);
 
