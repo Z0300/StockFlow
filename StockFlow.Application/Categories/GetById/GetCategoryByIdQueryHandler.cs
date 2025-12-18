@@ -3,7 +3,7 @@ using SharedKernel;
 using StockFlow.Application.Abstractions.Data;
 using StockFlow.Application.Abstractions.Messaging;
 using StockFlow.Application.Categories.Shared;
-using StockFlow.Domain.Categories;
+using StockFlow.Domain.DomainErrors;
 
 namespace StockFlow.Application.Categories.GetById;
 

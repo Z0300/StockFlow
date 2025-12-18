@@ -2,8 +2,9 @@
 using SharedKernel;
 using StockFlow.Application.Abstractions.Data;
 using StockFlow.Application.Abstractions.Messaging;
+using StockFlow.Domain.DomainErrors;
+using StockFlow.Domain.Entities;
 using StockFlow.Domain.Enums;
-using StockFlow.Domain.Orders;
 
 namespace StockFlow.Application.Orders.Cancel;
 

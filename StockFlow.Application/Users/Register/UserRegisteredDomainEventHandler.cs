@@ -1,5 +1,5 @@
 ﻿using SharedKernel;
-using StockFlow.Domain.Users;
+using StockFlow.Domain.DomainEvents;
 
 namespace StockFlow.Application.Users.Register;
 

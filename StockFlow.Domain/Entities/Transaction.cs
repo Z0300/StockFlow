@@ -1,0 +1,23 @@
+﻿using SharedKernel;
+using StockFlow.Domain.Enums;
+
+namespace StockFlow.Domain.Entities;
+
+public sealed class Transaction : Entity
+{
+    public Guid TransactionGroupId { get; set; }
+
+    public Guid InventoryId { get; set; }
+    public Inventory? Inventory { get; set; }
+
+    public int QuantityChange { get; set; }
+    public TransactionType TransactionType { get; set; }
+
+    public Guid OrderId { get; set; }
+    public Order? Order { get; set; }
+
+    public decimal? UnitCost { get; set; }
+    public string? Reason { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+}

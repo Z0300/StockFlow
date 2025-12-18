@@ -1,6 +1,6 @@
 ﻿using SharedKernel;
 
-namespace StockFlow.Domain.Categories;
+namespace StockFlow.Domain.Entities;
 
 public sealed class Category : Entity
 {

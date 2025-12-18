@@ -1,8 +1,8 @@
 ﻿using SharedKernel;
 using StockFlow.Application.Abstractions.Data;
 using StockFlow.Application.Abstractions.Messaging;
+using StockFlow.Domain.Entities;
 using StockFlow.Domain.Enums;
-using StockFlow.Domain.InventoryTransactions;
 
 namespace StockFlow.Application.InventoryTransactions.ReceiveOrder;
 
@@ -13,12 +13,10 @@ internal sealed class ReceiveOrderCommandHandler(IApplicationDbContext context)
     {
         var transactionId = Guid.NewGuid();
 
-        List<InventoryTransaction> transactions = [.. command.Items.Select(item =>
-            new InventoryTransaction
+        List<Transaction> transactions = [.. command.Items.Select(item =>
+            new Transaction
             {
-                TransactionId = transactionId,
-                ProductId = item.ProductId,
-                WarehouseId = item.WarehouseId,
+                TransactionGroupId = transactionId,
                 QuantityChange = item.QuantityChange,
                 TransactionType = TransactionType.PurchaseReceipt,
                 OrderId = item.OrderId,
@@ -26,7 +24,7 @@ internal sealed class ReceiveOrderCommandHandler(IApplicationDbContext context)
             })];
 
 
-        await context.InventoryTransactions.BulkInsertOptimizedAsync(transactions,
+        await context.Transactions.BulkInsertOptimizedAsync(transactions,
               options => options.IncludeGraph = true);
 
         return transactionId;

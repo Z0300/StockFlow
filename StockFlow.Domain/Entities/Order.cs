@@ -1,10 +1,7 @@
 ﻿using SharedKernel;
 using StockFlow.Domain.Enums;
-using StockFlow.Domain.OrderItems;
-using StockFlow.Domain.Suppliers;
-using StockFlow.Domain.Warehouses;
 
-namespace StockFlow.Domain.Orders;
+namespace StockFlow.Domain.Entities;
 
 public sealed class Order : Entity
 {

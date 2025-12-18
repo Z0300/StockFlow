@@ -1,8 +1,6 @@
 ﻿using SharedKernel;
-using StockFlow.Domain.Categories;
-using StockFlow.Domain.Warehouses;
 
-namespace StockFlow.Domain.Products;
+namespace StockFlow.Domain.Entities;
 
 public sealed class Product : Entity
 {

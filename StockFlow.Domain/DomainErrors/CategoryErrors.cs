@@ -1,6 +1,6 @@
 ﻿using SharedKernel;
 
-namespace StockFlow.Domain.Categories;
+namespace StockFlow.Domain.DomainErrors;
 
 public static class CategoryErrors
 {

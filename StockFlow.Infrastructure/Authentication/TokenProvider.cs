@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using StockFlow.Application.Abstractions.Authentication;
-using StockFlow.Domain.Users;
+using StockFlow.Domain.Entities;
 
 namespace StockFlow.Infrastructure.Authentication;
 

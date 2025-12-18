@@ -1,6 +1,6 @@
 ﻿using SharedKernel;
 
-namespace StockFlow.Domain.Warehouses;
+namespace StockFlow.Domain.Entities;
 
 public sealed class Warehouse : Entity
 {

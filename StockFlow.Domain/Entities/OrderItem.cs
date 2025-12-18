@@ -1,7 +1,6 @@
 ﻿using SharedKernel;
-using StockFlow.Domain.Products;
 
-namespace StockFlow.Domain.OrderItems;
+namespace StockFlow.Domain.Entities;
 
 public sealed class OrderItem : Entity
 {

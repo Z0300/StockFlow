@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using StockFlow.Domain.Products;
+using StockFlow.Domain.Entities;
 
 namespace StockFlow.Infrastructure.Configurations;
 
@@ -20,6 +20,6 @@ internal sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
             .WithMany()
             .HasForeignKey(u => u.CategoryId);
 
-       
+
     }
 }

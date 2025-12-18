@@ -1,5 +1,4 @@
 ﻿using StockFlow.Application.Categories.Shared;
-using StockFlow.Application.Warehouses.Shared;
 
 namespace StockFlow.Application.Products.GetById;
 
