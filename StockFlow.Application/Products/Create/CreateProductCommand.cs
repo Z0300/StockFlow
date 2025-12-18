@@ -6,5 +6,4 @@ public sealed record CreateProductCommand(
     string Name,
     string Sku,
     decimal Price,
-    Guid CategoryId,
-    Guid WarehouseId) : ICommand<Guid>;
+    Guid CategoryId) : ICommand<Guid>;

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using StockFlow.Infrastructure.Database;
@@ -11,9 +12,11 @@ using StockFlow.Infrastructure.Database;
 namespace StockFlow.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251218035301_AdditionalFields")]
+    partial class AdditionalFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1043,11 +1046,18 @@ namespace StockFlow.Infrastructure.Migrations
                         .HasColumnType("character varying(15)")
                         .HasColumnName("sku");
 
+                    b.Property<Guid>("WarehouseId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("warehouse_id");
+
                     b.HasKey("Id")
                         .HasName("pk_products");
 
                     b.HasIndex("CategoryId")
                         .HasDatabaseName("ix_products_category_id");
+
+                    b.HasIndex("WarehouseId")
+                        .HasDatabaseName("ix_products_warehouse_id");
 
                     b.ToTable("products", (string)null);
                 });
@@ -1253,7 +1263,16 @@ namespace StockFlow.Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_products_categories_category_id");
 
+                    b.HasOne("StockFlow.Domain.Warehouses.Warehouse", "Warehouse")
+                        .WithMany()
+                        .HasForeignKey("WarehouseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_products_warehouses_warehouse_id");
+
                     b.Navigation("Category");
+
+                    b.Navigation("Warehouse");
                 });
 
             modelBuilder.Entity("StockFlow.Domain.Orders.Order", b =>

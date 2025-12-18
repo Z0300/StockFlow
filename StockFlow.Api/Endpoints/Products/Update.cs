@@ -9,7 +9,7 @@ namespace StockFlow.Api.Endpoints.Products;
 
 public class Update : IEndpoint
 {
-    public sealed record Request(Guid Id, string Name, string Sku, decimal Price, Guid CategoryId, Guid WarehouseId);
+    public sealed record Request(Guid Id, string Name, string Sku, decimal Price, Guid CategoryId);
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
         app.MapPut("products/{id:guid}", async (
@@ -23,8 +23,7 @@ public class Update : IEndpoint
                     request.Name,
                     request.Sku,
                     request.Price,
-                    request.CategoryId,
-                    request.WarehouseId);
+                    request.CategoryId);
                 Result result = await handler.Handle(command, cancellationToken);
                 return result.Match(Results.NoContent, CustomResults.Problem);
             })

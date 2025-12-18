@@ -9,5 +9,4 @@ public sealed class GetProductByIdResponse
     public string Name { get; set; }
     public decimal Price { get; set; }
     public CategoryResponse Category { get; set; }
-    public WarehouseResponse Warehouse { get; set; }
 }

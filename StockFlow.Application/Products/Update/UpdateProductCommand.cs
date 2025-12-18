@@ -7,5 +7,4 @@ public sealed record UpdateProductCommand(
     string Name,
     string Sku,
     decimal Price,
-    Guid? CategoryId,
-    Guid? WarehouseId) : ICommand;
+    Guid? CategoryId) : ICommand;

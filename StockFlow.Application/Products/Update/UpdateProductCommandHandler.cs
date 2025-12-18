@@ -22,7 +22,6 @@ internal sealed class UpdateProductCommandHandler(IApplicationDbContext context)
         product.Name = command.Name;
         product.Price = command.Price;
         product.CategoryId = command.CategoryId ?? Guid.Empty;
-        product.WarehouseId = command.WarehouseId ?? Guid.Empty;
 
         await context.SaveChangesAsync(cancellationToken);
 
