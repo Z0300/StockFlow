@@ -15,12 +15,4 @@
 		<PackageReference Include="Z.EntityFramework.Extensions.EFCore" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="InventoryTransactions\ConsumeStock\" />
-	  <Folder Include="InventoryTransactions\Adjustment\" />
-	  <Folder Include="InventoryTransactions\OpeningBalance\" />
-	  <Folder Include="InventoryTransactions\Return\" />
-	  <Folder Include="InventoryTransactions\Transfer\" />
-	</ItemGroup>
-
 </Project>

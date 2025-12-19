@@ -2,35 +2,38 @@
 using StockFlow.Api.Extensions;
 using StockFlow.Api.Infrastructure;
 using StockFlow.Application.Abstractions.Messaging;
-using StockFlow.Application.InventoryTransactions.ReceiveOrder;
-
+using StockFlow.Application.Transactions.Create;
+using StockFlow.Domain.Enums;
 
 namespace StockFlow.Api.Endpoints.Transactions;
 
-internal sealed class Receive : IEndpoint
+internal sealed class Create : IEndpoint
 {
     private sealed record Request(List<ReceiveItemsRequest> Items);
     private sealed record ReceiveItemsRequest(
         Guid ProductId,
-        int QuantityChange,
-        Guid OrderId,
         Guid WarehouseId,
-        decimal? UnitCost,
+        TransactionType TransactionType,
+        int QuantityChange,
+        decimal UnitCost,
+        Guid? OrderId,
         string? Reason);
-
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPost("transactions/receive", async (
+        app.MapPost("transactions", async (
             Request request,
-            ICommandHandler<ReceiveOrderCommand, Guid> handler,
+            ICommandHandler<CreateTransactionCommand, Guid> handler,
             CancellationToken cancellationToken) =>
         {
-            var command = new ReceiveOrderCommand([..request.Items.Select(i => new ReceiveItems(
+            var command = new CreateTransactionCommand([..request.Items.Select(i => new ReceiveItems(
                 i.ProductId,
+                i.WarehouseId,
+                i.TransactionType,
                 i.QuantityChange,
+                i.UnitCost,
                 i.OrderId,
-                i.WarehouseId))]);
+                i.Reason))]);
 
             Result<Guid> result = await handler.Handle(command, cancellationToken);
             return result.Match(Results.Ok, CustomResults.Problem);
