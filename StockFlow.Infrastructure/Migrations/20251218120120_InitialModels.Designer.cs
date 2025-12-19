@@ -12,8 +12,8 @@ using StockFlow.Infrastructure.Database;
 namespace StockFlow.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251218111207_Initial")]
-    partial class Initial
+    [Migration("20251218120120_InitialModels")]
+    partial class InitialModels
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -97,15 +97,15 @@ namespace StockFlow.Infrastructure.Migrations
                         .HasColumnName("warehouse_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_inventory");
+                        .HasName("pk_inventories");
 
                     b.HasIndex("ProductId")
-                        .HasDatabaseName("ix_inventory_product_id");
+                        .HasDatabaseName("ix_inventories_product_id");
 
                     b.HasIndex("WarehouseId")
-                        .HasDatabaseName("ix_inventory_warehouse_id");
+                        .HasDatabaseName("ix_inventories_warehouse_id");
 
-                    b.ToTable("inventory", (string)null);
+                    b.ToTable("inventories", (string)null);
                 });
 
             modelBuilder.Entity("StockFlow.Domain.Entities.Order", b =>
@@ -1097,18 +1097,18 @@ namespace StockFlow.Infrastructure.Migrations
                         .HasColumnName("unit_cost");
 
                     b.HasKey("Id")
-                        .HasName("pk_inventory_transactions");
+                        .HasName("pk_transactions");
 
                     b.HasIndex("InventoryId")
-                        .HasDatabaseName("ix_inventory_transactions_inventory_id");
+                        .HasDatabaseName("ix_transactions_inventory_id");
 
                     b.HasIndex("OrderId")
-                        .HasDatabaseName("ix_inventory_transactions_order_id");
+                        .HasDatabaseName("ix_transactions_order_id");
 
                     b.HasIndex("TransactionGroupId")
-                        .HasDatabaseName("ix_inventory_transactions_transaction_group_id");
+                        .HasDatabaseName("ix_transactions_transaction_group_id");
 
-                    b.ToTable("inventory_transactions", (string)null);
+                    b.ToTable("transactions", (string)null);
                 });
 
             modelBuilder.Entity("StockFlow.Domain.Entities.User", b =>
@@ -1200,14 +1200,14 @@ namespace StockFlow.Infrastructure.Migrations
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_inventory_products_product_id");
+                        .HasConstraintName("fk_inventories_products_product_id");
 
                     b.HasOne("StockFlow.Domain.Entities.Warehouse", "Warehouse")
                         .WithMany()
                         .HasForeignKey("WarehouseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_inventory_warehouses_warehouse_id");
+                        .HasConstraintName("fk_inventories_warehouses_warehouse_id");
 
                     b.Navigation("Product");
 
@@ -1288,14 +1288,14 @@ namespace StockFlow.Infrastructure.Migrations
                         .HasForeignKey("InventoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_inventory_transactions_inventory_inventory_id");
+                        .HasConstraintName("fk_transactions_inventories_inventory_id");
 
                     b.HasOne("StockFlow.Domain.Entities.Order", "Order")
                         .WithMany()
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_inventory_transactions_orders_order_id");
+                        .HasConstraintName("fk_transactions_orders_order_id");
 
                     b.Navigation("Inventory");
 

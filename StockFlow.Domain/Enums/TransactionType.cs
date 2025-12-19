@@ -3,10 +3,16 @@
 public enum TransactionType
 {
     OpeningBalance = 1,
-    PurchaseReceipt = 2,
-    SaleIssue = 3,
-    TransferIn = 4,
-    TransferOut = 5,
-    Adjustment = 6,
-    ReturnToSupplier = 7
+
+    PurchaseReceipt = 10,
+    CustomerReturn = 11,
+
+    SaleIssue = 20,
+    Consumption = 21,
+    ReturnToSupplier = 22,
+
+    TransferOut = 30,
+    TransferIn = 31,
+
+    Adjustment = 40
 }

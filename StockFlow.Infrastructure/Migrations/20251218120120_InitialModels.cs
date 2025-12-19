@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace StockFlow.Infrastructure.Migrations;
 
 /// <inheritdoc />
-public partial class Initial : Migration
+public partial class InitialModels : Migration
 {
     /// <inheritdoc />
     protected override void Up(MigrationBuilder migrationBuilder)
@@ -192,7 +192,7 @@ public partial class Initial : Migration
             });
 
         migrationBuilder.CreateTable(
-            name: "inventory",
+            name: "inventories",
             columns: table => new
             {
                 id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -203,15 +203,15 @@ public partial class Initial : Migration
             },
             constraints: table =>
             {
-                table.PrimaryKey("pk_inventory", x => x.id);
+                table.PrimaryKey("pk_inventories", x => x.id);
                 table.ForeignKey(
-                    name: "fk_inventory_products_product_id",
+                    name: "fk_inventories_products_product_id",
                     column: x => x.product_id,
                     principalTable: "products",
                     principalColumn: "id",
                     onDelete: ReferentialAction.Cascade);
                 table.ForeignKey(
-                    name: "fk_inventory_warehouses_warehouse_id",
+                    name: "fk_inventories_warehouses_warehouse_id",
                     column: x => x.warehouse_id,
                     principalTable: "warehouses",
                     principalColumn: "id",
@@ -245,7 +245,7 @@ public partial class Initial : Migration
             });
 
         migrationBuilder.CreateTable(
-            name: "inventory_transactions",
+            name: "transactions",
             columns: table => new
             {
                 id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -260,15 +260,15 @@ public partial class Initial : Migration
             },
             constraints: table =>
             {
-                table.PrimaryKey("pk_inventory_transactions", x => x.id);
+                table.PrimaryKey("pk_transactions", x => x.id);
                 table.ForeignKey(
-                    name: "fk_inventory_transactions_inventory_inventory_id",
+                    name: "fk_transactions_inventories_inventory_id",
                     column: x => x.inventory_id,
-                    principalTable: "inventory",
+                    principalTable: "inventories",
                     principalColumn: "id",
                     onDelete: ReferentialAction.Cascade);
                 table.ForeignKey(
-                    name: "fk_inventory_transactions_orders_order_id",
+                    name: "fk_transactions_orders_order_id",
                     column: x => x.order_id,
                     principalTable: "orders",
                     principalColumn: "id",
@@ -452,29 +452,14 @@ public partial class Initial : Migration
             unique: true);
 
         migrationBuilder.CreateIndex(
-            name: "ix_inventory_product_id",
-            table: "inventory",
+            name: "ix_inventories_product_id",
+            table: "inventories",
             column: "product_id");
 
         migrationBuilder.CreateIndex(
-            name: "ix_inventory_warehouse_id",
-            table: "inventory",
+            name: "ix_inventories_warehouse_id",
+            table: "inventories",
             column: "warehouse_id");
-
-        migrationBuilder.CreateIndex(
-            name: "ix_inventory_transactions_inventory_id",
-            table: "inventory_transactions",
-            column: "inventory_id");
-
-        migrationBuilder.CreateIndex(
-            name: "ix_inventory_transactions_order_id",
-            table: "inventory_transactions",
-            column: "order_id");
-
-        migrationBuilder.CreateIndex(
-            name: "ix_inventory_transactions_transaction_group_id",
-            table: "inventory_transactions",
-            column: "transaction_group_id");
 
         migrationBuilder.CreateIndex(
             name: "ix_order_items_order_id",
@@ -512,6 +497,21 @@ public partial class Initial : Migration
             column: "users_id");
 
         migrationBuilder.CreateIndex(
+            name: "ix_transactions_inventory_id",
+            table: "transactions",
+            column: "inventory_id");
+
+        migrationBuilder.CreateIndex(
+            name: "ix_transactions_order_id",
+            table: "transactions",
+            column: "order_id");
+
+        migrationBuilder.CreateIndex(
+            name: "ix_transactions_transaction_group_id",
+            table: "transactions",
+            column: "transaction_group_id");
+
+        migrationBuilder.CreateIndex(
             name: "ix_users_email",
             table: "users",
             column: "email",
@@ -522,9 +522,6 @@ public partial class Initial : Migration
     protected override void Down(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.DropTable(
-            name: "inventory_transactions");
-
-        migrationBuilder.DropTable(
             name: "order_items");
 
         migrationBuilder.DropTable(
@@ -534,10 +531,7 @@ public partial class Initial : Migration
             name: "role_user");
 
         migrationBuilder.DropTable(
-            name: "inventory");
-
-        migrationBuilder.DropTable(
-            name: "orders");
+            name: "transactions");
 
         migrationBuilder.DropTable(
             name: "permissions");
@@ -547,6 +541,12 @@ public partial class Initial : Migration
 
         migrationBuilder.DropTable(
             name: "users");
+
+        migrationBuilder.DropTable(
+            name: "inventories");
+
+        migrationBuilder.DropTable(
+            name: "orders");
 
         migrationBuilder.DropTable(
             name: "products");

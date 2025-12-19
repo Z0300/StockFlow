@@ -4,21 +4,25 @@ using StockFlow.Application.Abstractions.Messaging;
 using StockFlow.Domain.Entities;
 using StockFlow.Domain.Enums;
 
-namespace StockFlow.Application.InventoryTransactions.ReceiveOrder;
+namespace StockFlow.Application.Transactions.Create;
 
-internal sealed class ReceiveOrderCommandHandler(IApplicationDbContext context)
-    : ICommandHandler<ReceiveOrderCommand, Guid>
+internal sealed class CreateTransactionCommandHandler(IApplicationDbContext context)
+    : ICommandHandler<CreateTransactionCommand, Guid>
 {
-    public async Task<Result<Guid>> Handle(ReceiveOrderCommand command, CancellationToken cancellationToken)
+    public async Task<Result<Guid>> Handle(CreateTransactionCommand command, CancellationToken cancellationToken)
     {
-        var transactionId = Guid.NewGuid();
+        var transactionId =  Guid.NewGuid();
 
         List<Transaction> transactions = [.. command.Items.Select(item =>
             new Transaction
             {
                 TransactionGroupId = transactionId,
+                ProductId = item.ProductId,
+                WarehouseId = item.WarehouseId,
                 QuantityChange = item.QuantityChange,
-                TransactionType = TransactionType.PurchaseReceipt,
+                UnitCost = item.UnitCost,
+                TransactionType = item.TransactionType,
+                Reason = item.Reason,
                 OrderId = item.OrderId,
                 CreatedAt = DateTime.UtcNow
             })];

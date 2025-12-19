@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using StockFlow.Infrastructure.Database;
@@ -11,9 +12,11 @@ using StockFlow.Infrastructure.Database;
 namespace StockFlow.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251219033642_RemoveInventoryModel")]
+    partial class RemoveInventoryModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1054,8 +1057,8 @@ namespace StockFlow.Infrastructure.Migrations
                         .HasColumnName("transaction_type");
 
                     b.Property<decimal?>("UnitCost")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("numeric(18,4)")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
                         .HasColumnName("unit_cost");
 
                     b.Property<Guid>("WarehouseId")
@@ -1068,14 +1071,14 @@ namespace StockFlow.Infrastructure.Migrations
                     b.HasIndex("OrderId")
                         .HasDatabaseName("ix_transactions_order_id");
 
+                    b.HasIndex("ProductId")
+                        .HasDatabaseName("ix_transactions_product_id");
+
                     b.HasIndex("TransactionGroupId")
                         .HasDatabaseName("ix_transactions_transaction_group_id");
 
                     b.HasIndex("WarehouseId")
                         .HasDatabaseName("ix_transactions_warehouse_id");
-
-                    b.HasIndex("ProductId", "WarehouseId")
-                        .HasDatabaseName("ix_transactions_product_id_warehouse_id");
 
                     b.ToTable("transactions", (string)null);
                 });

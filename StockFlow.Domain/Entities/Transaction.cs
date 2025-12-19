@@ -7,17 +7,22 @@ public sealed class Transaction : Entity
 {
     public Guid TransactionGroupId { get; set; }
 
-    public Guid InventoryId { get; set; }
-    public Inventory? Inventory { get; set; }
+
+    public Guid ProductId { get; set; }
+    public Product? Product { get; set; }
+
+
+    public Guid WarehouseId { get; set; }
+    public Warehouse? Warehouse { get; set; }
+
+
+    public Guid? OrderId { get; set; }
+    public Order? Order { get; set; }
+
 
     public int QuantityChange { get; set; }
     public TransactionType TransactionType { get; set; }
-
-    public Guid OrderId { get; set; }
-    public Order? Order { get; set; }
-
     public decimal? UnitCost { get; set; }
     public string? Reason { get; set; }
-
     public DateTime CreatedAt { get; set; }
 }
