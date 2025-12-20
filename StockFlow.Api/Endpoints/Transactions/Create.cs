@@ -9,15 +9,17 @@ namespace StockFlow.Api.Endpoints.Transactions;
 
 internal sealed class Create : IEndpoint
 {
-    private sealed record Request(List<ReceiveItemsRequest> Items);
-    private sealed record ReceiveItemsRequest(
-        Guid ProductId,
+    private sealed record Request(
         Guid WarehouseId,
-        TransactionType TransactionType,
-        int QuantityChange,
-        decimal UnitCost,
         Guid? OrderId,
-        string? Reason);
+        TransactionType TransactionType,
+        string? Reason,
+        List<RequestItems> Items);
+
+    private sealed record RequestItems(
+        Guid ProductId,
+        int QuantityChange,
+        decimal UnitCost);
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
@@ -26,14 +28,15 @@ internal sealed class Create : IEndpoint
             ICommandHandler<CreateTransactionCommand, Guid> handler,
             CancellationToken cancellationToken) =>
         {
-            var command = new CreateTransactionCommand([..request.Items.Select(i => new ReceiveItems(
-                i.ProductId,
-                i.WarehouseId,
-                i.TransactionType,
-                i.QuantityChange,
-                i.UnitCost,
-                i.OrderId,
-                i.Reason))]);
+            var command = new CreateTransactionCommand(
+                request.WarehouseId,
+                request.OrderId,
+                request.TransactionType,
+                request.Reason, 
+                [..request.Items.Select(i => new TransactionItems(
+                    i.ProductId,
+                    i.QuantityChange,
+                    i.UnitCost))]);
 
             Result<Guid> result = await handler.Handle(command, cancellationToken);
             return result.Match(Results.Ok, CustomResults.Problem);

@@ -1,29 +1,39 @@
 ﻿using SharedKernel;
 using StockFlow.Application.Abstractions.Data;
 using StockFlow.Application.Abstractions.Messaging;
+using StockFlow.Application.Transactions.Create.PolicyResolver;
 using StockFlow.Domain.Entities;
 using StockFlow.Domain.Enums;
 
 namespace StockFlow.Application.Transactions.Create;
 
-internal sealed class CreateTransactionCommandHandler(IApplicationDbContext context)
+internal sealed class CreateTransactionCommandHandler(
+    IApplicationDbContext context,
+    TransactionPolicyResolver resolver)
     : ICommandHandler<CreateTransactionCommand, Guid>
 {
-    public async Task<Result<Guid>> Handle(CreateTransactionCommand command, CancellationToken cancellationToken)
+
+    public async Task<Result<Guid>> Handle(
+        CreateTransactionCommand command,
+        CancellationToken cancellationToken)
     {
-        var transactionId =  Guid.NewGuid();
+        ITransactionPolicyResolver policy = resolver.Resolve(command.TransactionType);
+
+        await policy.ValidateAsync(command, cancellationToken);
+
+        var transactionId = Guid.NewGuid();
 
         List<Transaction> transactions = [.. command.Items.Select(item =>
             new Transaction
             {
                 TransactionGroupId = transactionId,
                 ProductId = item.ProductId,
-                WarehouseId = item.WarehouseId,
+                WarehouseId = command.WarehouseId,
                 QuantityChange = item.QuantityChange,
                 UnitCost = item.UnitCost,
-                TransactionType = item.TransactionType,
-                Reason = item.Reason,
-                OrderId = item.OrderId,
+                TransactionType = command.TransactionType,
+                Reason = command.Reason,
+                OrderId = command.OrderId,
                 CreatedAt = DateTime.UtcNow
             })];
 

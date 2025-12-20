@@ -3,6 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using SharedKernel;
 using StockFlow.Application.Abstractions.Behaviors;
 using StockFlow.Application.Abstractions.Messaging;
+using StockFlow.Application.Transactions.Create;
+using StockFlow.Application.Transactions.Create.PolicyResolver;
 
 namespace StockFlow.Application;
 
@@ -20,6 +22,9 @@ public static class DependencyInjection
             .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<,>)), publicOnly: false)
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());
+
+        services.AddScoped<TransactionPolicyResolver>();
+        services.AddScoped<ITransactionPolicyResolver, OpeningBalancePolicy>();
 
         services.Decorate(typeof(ICommandHandler<,>), typeof(ValidationDecorator.CommandHandler<,>));
         services.Decorate(typeof(ICommandHandler<>), typeof(ValidationDecorator.CommandBaseHandler<>));

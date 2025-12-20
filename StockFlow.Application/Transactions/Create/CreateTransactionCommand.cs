@@ -3,15 +3,16 @@ using StockFlow.Domain.Enums;
 
 namespace StockFlow.Application.Transactions.Create;
 
-public sealed record CreateTransactionCommand(List<ReceiveItems> Items) : ICommand<Guid>;
-
-public sealed record ReceiveItems(
-    Guid ProductId,
+public sealed record CreateTransactionCommand(
     Guid WarehouseId,
-    TransactionType TransactionType,
-    int QuantityChange,
-    decimal UnitCost,
     Guid? OrderId,
-    string? Reason
+    TransactionType TransactionType,
+    string? Reason,
+    List<TransactionItems> Items) : ICommand<Guid>;
+
+public sealed record TransactionItems(
+    Guid ProductId,
+    int QuantityChange,
+    decimal UnitCost
 );
 

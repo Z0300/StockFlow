@@ -6,24 +6,27 @@ internal sealed class CreateTransactionCommandValidator : AbstractValidator<Crea
 {
     public CreateTransactionCommandValidator()
     {
+        RuleFor(x => x.Items)
+            .NotEmpty()
+            .WithMessage("At least one item is required.");
+
+        RuleFor(x => x.WarehouseId)
+           .NotEmpty();
+
+        RuleFor(x => x.TransactionType)
+          .IsInEnum();
 
         RuleForEach(x => x.Items).ChildRules(items =>
         {
-
             items.RuleFor(i => i.ProductId)
                 .NotEmpty();
 
-            items.RuleFor(i => i.WarehouseId)
-               .NotEmpty();
-
-            items.RuleFor(i => i.TransactionType)
-               .IsInEnum();
-
             items.RuleFor(i => i.QuantityChange)
-                .GreaterThan(0);
+                .NotEqual(0);
 
-            items.RuleFor(i => i.OrderId)
-               .NotEmpty();
+            items.RuleFor(i => i.UnitCost)
+                .GreaterThanOrEqualTo(0);
+
         });
     }
 }
