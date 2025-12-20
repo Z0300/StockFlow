@@ -25,6 +25,7 @@ public static class DependencyInjection
 
         services.AddScoped<TransactionPolicyResolver>();
         services.AddScoped<ITransactionPolicyResolver, OpeningBalancePolicy>();
+        services.AddScoped<ITransactionPolicyResolver, PurchaseReceiptPolicy>();
 
         services.Decorate(typeof(ICommandHandler<,>), typeof(ValidationDecorator.CommandHandler<,>));
         services.Decorate(typeof(ICommandHandler<>), typeof(ValidationDecorator.CommandBaseHandler<>));
