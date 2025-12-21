@@ -5,8 +5,7 @@ namespace StockFlow.Domain.Entities;
 
 public sealed class Transaction : Entity
 {
-    public Guid TransactionGroupId { get; set; }
-
+    public Guid OperationId { get; set; }
 
     public Guid ProductId { get; set; }
     public Product? Product { get; set; }
@@ -25,4 +24,7 @@ public sealed class Transaction : Entity
     public decimal? UnitCost { get; set; }
     public string? Reason { get; set; }
     public DateTime CreatedAt { get; set; }
+
+    public Guid? TransferId { get; set; }
+    public Transfer? Transfer { get; set; }
 }

@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace StockFlow.Infrastructure.Migrations;
 
 /// <inheritdoc />
-public partial class InitialModels : Migration
+public partial class InitialModel : Migration
 {
     /// <inheritdoc />
     protected override void Up(MigrationBuilder migrationBuilder)
@@ -64,6 +64,21 @@ public partial class InitialModels : Migration
             constraints: table =>
             {
                 table.PrimaryKey("pk_suppliers", x => x.id);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "transfers",
+            columns: table => new
+            {
+                id = table.Column<Guid>(type: "uuid", nullable: false),
+                source_warehouse_id = table.Column<Guid>(type: "uuid", nullable: false),
+                destination_warehouse_id = table.Column<Guid>(type: "uuid", nullable: false),
+                status = table.Column<string>(type: "text", nullable: false),
+                created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("pk_transfers", x => x.id);
             });
 
         migrationBuilder.CreateTable(
@@ -192,28 +207,28 @@ public partial class InitialModels : Migration
             });
 
         migrationBuilder.CreateTable(
-            name: "inventories",
+            name: "transfer_items",
             columns: table => new
             {
                 id = table.Column<Guid>(type: "uuid", nullable: false),
+                transfer_id = table.Column<Guid>(type: "uuid", nullable: false),
                 product_id = table.Column<Guid>(type: "uuid", nullable: false),
-                warehouse_id = table.Column<Guid>(type: "uuid", nullable: false),
-                quantity = table.Column<int>(type: "integer", nullable: false),
-                updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                requested_quantity = table.Column<int>(type: "integer", nullable: false),
+                received_quantity = table.Column<int>(type: "integer", nullable: false)
             },
             constraints: table =>
             {
-                table.PrimaryKey("pk_inventories", x => x.id);
+                table.PrimaryKey("pk_transfer_items", x => x.id);
                 table.ForeignKey(
-                    name: "fk_inventories_products_product_id",
+                    name: "fk_transfer_items_products_product_id",
                     column: x => x.product_id,
                     principalTable: "products",
                     principalColumn: "id",
                     onDelete: ReferentialAction.Cascade);
                 table.ForeignKey(
-                    name: "fk_inventories_warehouses_warehouse_id",
-                    column: x => x.warehouse_id,
-                    principalTable: "warehouses",
+                    name: "fk_transfer_items_transfers_transfer_id",
+                    column: x => x.transfer_id,
+                    principalTable: "transfers",
                     principalColumn: "id",
                     onDelete: ReferentialAction.Cascade);
             });
@@ -249,28 +264,41 @@ public partial class InitialModels : Migration
             columns: table => new
             {
                 id = table.Column<Guid>(type: "uuid", nullable: false),
-                transaction_group_id = table.Column<Guid>(type: "uuid", nullable: false),
-                inventory_id = table.Column<Guid>(type: "uuid", nullable: false),
+                operation_id = table.Column<Guid>(type: "uuid", nullable: false),
+                product_id = table.Column<Guid>(type: "uuid", nullable: false),
+                warehouse_id = table.Column<Guid>(type: "uuid", nullable: false),
+                order_id = table.Column<Guid>(type: "uuid", nullable: true),
                 quantity_change = table.Column<int>(type: "integer", nullable: false),
                 transaction_type = table.Column<int>(type: "integer", nullable: false),
-                order_id = table.Column<Guid>(type: "uuid", nullable: false),
-                unit_cost = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: true),
+                unit_cost = table.Column<decimal>(type: "numeric(18,4)", precision: 18, scale: 4, nullable: true),
                 reason = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
-                created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                transfer_id = table.Column<Guid>(type: "uuid", nullable: true)
             },
             constraints: table =>
             {
                 table.PrimaryKey("pk_transactions", x => x.id);
                 table.ForeignKey(
-                    name: "fk_transactions_inventories_inventory_id",
-                    column: x => x.inventory_id,
-                    principalTable: "inventories",
-                    principalColumn: "id",
-                    onDelete: ReferentialAction.Cascade);
-                table.ForeignKey(
                     name: "fk_transactions_orders_order_id",
                     column: x => x.order_id,
                     principalTable: "orders",
+                    principalColumn: "id");
+                table.ForeignKey(
+                    name: "fk_transactions_products_product_id",
+                    column: x => x.product_id,
+                    principalTable: "products",
+                    principalColumn: "id",
+                    onDelete: ReferentialAction.Cascade);
+                table.ForeignKey(
+                    name: "fk_transactions_transfers_transfer_id",
+                    column: x => x.transfer_id,
+                    principalTable: "transfers",
+                    principalColumn: "id",
+                    onDelete: ReferentialAction.Restrict);
+                table.ForeignKey(
+                    name: "fk_transactions_warehouses_warehouse_id",
+                    column: x => x.warehouse_id,
+                    principalTable: "warehouses",
                     principalColumn: "id",
                     onDelete: ReferentialAction.Cascade);
             });
@@ -452,16 +480,6 @@ public partial class InitialModels : Migration
             unique: true);
 
         migrationBuilder.CreateIndex(
-            name: "ix_inventories_product_id",
-            table: "inventories",
-            column: "product_id");
-
-        migrationBuilder.CreateIndex(
-            name: "ix_inventories_warehouse_id",
-            table: "inventories",
-            column: "warehouse_id");
-
-        migrationBuilder.CreateIndex(
             name: "ix_order_items_order_id",
             table: "order_items",
             column: "order_id");
@@ -497,9 +515,9 @@ public partial class InitialModels : Migration
             column: "users_id");
 
         migrationBuilder.CreateIndex(
-            name: "ix_transactions_inventory_id",
+            name: "ix_transactions_operation_id",
             table: "transactions",
-            column: "inventory_id");
+            column: "operation_id");
 
         migrationBuilder.CreateIndex(
             name: "ix_transactions_order_id",
@@ -507,9 +525,30 @@ public partial class InitialModels : Migration
             column: "order_id");
 
         migrationBuilder.CreateIndex(
-            name: "ix_transactions_transaction_group_id",
+            name: "ix_transactions_product_id_warehouse_id",
             table: "transactions",
-            column: "transaction_group_id");
+            columns: ["product_id", "warehouse_id"]);
+
+        migrationBuilder.CreateIndex(
+            name: "ix_transactions_transfer_id",
+            table: "transactions",
+            column: "transfer_id");
+
+        migrationBuilder.CreateIndex(
+            name: "ix_transactions_warehouse_id",
+            table: "transactions",
+            column: "warehouse_id");
+
+        migrationBuilder.CreateIndex(
+            name: "ix_transfer_items_product_id",
+            table: "transfer_items",
+            column: "product_id");
+
+        migrationBuilder.CreateIndex(
+            name: "ix_transfer_items_transfer_id_product_id",
+            table: "transfer_items",
+            columns: ["transfer_id", "product_id"],
+            unique: true);
 
         migrationBuilder.CreateIndex(
             name: "ix_users_email",
@@ -534,6 +573,9 @@ public partial class InitialModels : Migration
             name: "transactions");
 
         migrationBuilder.DropTable(
+            name: "transfer_items");
+
+        migrationBuilder.DropTable(
             name: "permissions");
 
         migrationBuilder.DropTable(
@@ -543,13 +585,13 @@ public partial class InitialModels : Migration
             name: "users");
 
         migrationBuilder.DropTable(
-            name: "inventories");
-
-        migrationBuilder.DropTable(
             name: "orders");
 
         migrationBuilder.DropTable(
             name: "products");
+
+        migrationBuilder.DropTable(
+            name: "transfers");
 
         migrationBuilder.DropTable(
             name: "suppliers");

@@ -1028,6 +1028,10 @@ namespace StockFlow.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<Guid>("OperationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("operation_id");
+
                     b.Property<Guid?>("OrderId")
                         .HasColumnType("uuid")
                         .HasColumnName("order_id");
@@ -1045,13 +1049,13 @@ namespace StockFlow.Infrastructure.Migrations
                         .HasColumnType("character varying(512)")
                         .HasColumnName("reason");
 
-                    b.Property<Guid>("TransactionGroupId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("transaction_group_id");
-
                     b.Property<int>("TransactionType")
                         .HasColumnType("integer")
                         .HasColumnName("transaction_type");
+
+                    b.Property<Guid?>("TransferId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("transfer_id");
 
                     b.Property<decimal?>("UnitCost")
                         .HasPrecision(18, 4)
@@ -1065,11 +1069,14 @@ namespace StockFlow.Infrastructure.Migrations
                     b.HasKey("Id")
                         .HasName("pk_transactions");
 
+                    b.HasIndex("OperationId")
+                        .HasDatabaseName("ix_transactions_operation_id");
+
                     b.HasIndex("OrderId")
                         .HasDatabaseName("ix_transactions_order_id");
 
-                    b.HasIndex("TransactionGroupId")
-                        .HasDatabaseName("ix_transactions_transaction_group_id");
+                    b.HasIndex("TransferId")
+                        .HasDatabaseName("ix_transactions_transfer_id");
 
                     b.HasIndex("WarehouseId")
                         .HasDatabaseName("ix_transactions_warehouse_id");
@@ -1078,6 +1085,72 @@ namespace StockFlow.Infrastructure.Migrations
                         .HasDatabaseName("ix_transactions_product_id_warehouse_id");
 
                     b.ToTable("transactions", (string)null);
+                });
+
+            modelBuilder.Entity("StockFlow.Domain.Entities.Transfer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("DestinationWarehouseId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("destination_warehouse_id");
+
+                    b.Property<Guid>("SourceWarehouseId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("source_warehouse_id");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("status");
+
+                    b.HasKey("Id")
+                        .HasName("pk_transfers");
+
+                    b.ToTable("transfers", (string)null);
+                });
+
+            modelBuilder.Entity("StockFlow.Domain.Entities.TransferItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("product_id");
+
+                    b.Property<int>("ReceivedQuantity")
+                        .HasColumnType("integer")
+                        .HasColumnName("received_quantity");
+
+                    b.Property<int>("RequestedQuantity")
+                        .HasColumnType("integer")
+                        .HasColumnName("requested_quantity");
+
+                    b.Property<Guid>("TransferId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("transfer_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_transfer_items");
+
+                    b.HasIndex("ProductId")
+                        .HasDatabaseName("ix_transfer_items_product_id");
+
+                    b.HasIndex("TransferId", "ProductId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_transfer_items_transfer_id_product_id");
+
+                    b.ToTable("transfer_items", (string)null);
                 });
 
             modelBuilder.Entity("StockFlow.Domain.Entities.User", b =>
@@ -1243,6 +1316,12 @@ namespace StockFlow.Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_transactions_products_product_id");
 
+                    b.HasOne("StockFlow.Domain.Entities.Transfer", "Transfer")
+                        .WithMany("Transactions")
+                        .HasForeignKey("TransferId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_transactions_transfers_transfer_id");
+
                     b.HasOne("StockFlow.Domain.Entities.Warehouse", "Warehouse")
                         .WithMany()
                         .HasForeignKey("WarehouseId")
@@ -1254,12 +1333,42 @@ namespace StockFlow.Infrastructure.Migrations
 
                     b.Navigation("Product");
 
+                    b.Navigation("Transfer");
+
                     b.Navigation("Warehouse");
+                });
+
+            modelBuilder.Entity("StockFlow.Domain.Entities.TransferItem", b =>
+                {
+                    b.HasOne("StockFlow.Domain.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_transfer_items_products_product_id");
+
+                    b.HasOne("StockFlow.Domain.Entities.Transfer", "Transfer")
+                        .WithMany("Items")
+                        .HasForeignKey("TransferId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_transfer_items_transfers_transfer_id");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Transfer");
                 });
 
             modelBuilder.Entity("StockFlow.Domain.Entities.Order", b =>
                 {
                     b.Navigation("OrderItems");
+                });
+
+            modelBuilder.Entity("StockFlow.Domain.Entities.Transfer", b =>
+                {
+                    b.Navigation("Items");
+
+                    b.Navigation("Transactions");
                 });
 #pragma warning restore 612, 618
         }
