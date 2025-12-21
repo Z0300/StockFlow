@@ -26,7 +26,7 @@ internal sealed class CreateTransactionCommandHandler(
         List<Transaction> transactions = [.. command.Items.Select(item =>
             new Transaction
             {
-                TransactionGroupId = transactionId,
+                OperationId = transactionId,
                 ProductId = item.ProductId,
                 WarehouseId = command.WarehouseId,
                 QuantityChange = item.QuantityChange,

@@ -22,6 +22,11 @@ internal sealed class ConsumptionPolicy : ITransactionPolicyResolver
             throw new DomainException("Consumption must reduce stock");
         }
 
+        if (string.IsNullOrWhiteSpace(command.Reason))
+        {
+            throw new DomainException("Consumption requires a reason");
+        }
+
         return Task.CompletedTask;
     }
 }
