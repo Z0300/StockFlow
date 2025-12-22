@@ -12,15 +12,6 @@ internal sealed class PurchaseReceiptPolicy : ITransactionPolicyResolver
 
     public Task ValidateAsync(CreateTransactionCommand command, CancellationToken ct)
     {
-        if (command.OrderId is null || command.OrderId == Guid.Empty)
-        {
-            throw new DomainException("OrderId required");
-        }
-
-        if (command.Items.Any(item => item.QuantityChange <= 0))
-        {
-            throw new DomainException("Receipt must increase stock");
-        }
 
         return Task.CompletedTask;
     }

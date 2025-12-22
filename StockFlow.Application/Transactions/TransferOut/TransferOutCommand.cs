@@ -9,12 +9,10 @@ namespace StockFlow.Application.Transactions.TransferOut;
 public sealed record TransferOutCommand(
     Guid SourceWarehouseId,
     Guid DestinationWarehouseId,
-    TransferStatus Status,
     List<TransferOutItems> Items) : ICommand<Guid>;
 
 public sealed record TransferOutItems(
     Guid ProductId,
-    int RequestedQuantity,
-    int ReceivedQuantity
+    int RequestedQuantity
 );
 

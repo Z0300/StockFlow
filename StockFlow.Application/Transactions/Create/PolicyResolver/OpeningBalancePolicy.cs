@@ -15,16 +15,6 @@ internal sealed class OpeningBalancePolicy(IApplicationDbContext context) : ITra
 
     public async Task ValidateAsync(CreateTransactionCommand command, CancellationToken ct)
     {
-
-        var grouped = command.Items
-            .GroupBy(i => new { i.ProductId, command.WarehouseId });
-
-        if (grouped.Any(g => g.Count() > 1))
-        {
-            throw new DomainException(
-               "Duplicate opening balance per product/warehouse");
-        }
-
         foreach (TransactionItems item in command.Items)
         {
             bool exists = await context.Transactions

@@ -16,9 +16,6 @@ internal sealed class TransferItemConfiguration : IEntityTypeConfiguration<Trans
         builder.Property(i => i.RequestedQuantity)
                .IsRequired();
 
-        builder.Property(i => i.ReceivedQuantity)
-               .IsRequired();
-
         builder.HasIndex(i => new { i.TransferId, i.ProductId })
                .IsUnique();
 

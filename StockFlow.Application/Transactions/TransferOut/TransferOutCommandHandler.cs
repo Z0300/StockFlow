@@ -4,7 +4,9 @@ using System.Text;
 using SharedKernel;
 using StockFlow.Application.Abstractions.Data;
 using StockFlow.Application.Abstractions.Messaging;
+using StockFlow.Domain.DomainErrors;
 using StockFlow.Domain.Entities;
+using StockFlow.Domain.Enums;
 using StockFlow.Domain.Exceptions;
 
 
@@ -16,28 +18,38 @@ internal sealed class TransferOutCommandHandler(
 {
     public async Task<Result<Guid>> Handle(TransferOutCommand command, CancellationToken cancellationToken)
     {
-        var transferId = Guid.NewGuid();
 
-        List<Transfer> transferItems = [.. command.Items.Select(item =>
+        foreach (TransferOutItems item in command.Items)
+        {
+            int availableQuantity = context.Transactions
+                .Where(stock => stock.WarehouseId == command.SourceWarehouseId &&
+                        stock.ProductId == item.ProductId)
+                .Sum(stock => stock.QuantityChange);
+
+            if (availableQuantity < item.RequestedQuantity)
+            {
+                return Result.Failure<Guid>(TransferErrors.InsufficientStock(item.ProductId));
+            }
+        }
+
+        var transfer =
             new Transfer
             {
-                Id = transferId,
+                Id = Guid.NewGuid(),
                 DestinationWarehouseId = command.DestinationWarehouseId,
                 SourceWarehouseId = command.SourceWarehouseId,
-                Status = command.Status,
-                Items=
-                [
-                    new() {
-                        ProductId = item.ProductId,
-                        RequestedQuantity = item.RequestedQuantity,
-                        ReceivedQuantity = item.ReceivedQuantity
-                    }
-                ],
-            })];
+                Status = TransferStatus.Draft,
+                Items = [.. command.Items.Select(item => new TransferItem
+                {
+                    ProductId = item.ProductId,
+                    RequestedQuantity = item.RequestedQuantity,
+                    ReceivedQuantity = 0,
+                })],
+            };
 
-        await context.Transfers.BulkInsertOptimizedAsync(transferItems,
-              options => options.IncludeGraph = true);
+        context.Transfers.Add(transfer);
+        await context.SaveChangesAsync(cancellationToken);
 
-        return transferId;
+        return transfer.Id;
     }
 }

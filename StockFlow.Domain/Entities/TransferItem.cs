@@ -14,5 +14,5 @@ public sealed class TransferItem : Entity
     public Product? Product { get; set; }
 
     public int RequestedQuantity { get; set; }
-    public int ReceivedQuantity { get; set; }
+    public int? ReceivedQuantity { get; set; }
 }

@@ -21,8 +21,16 @@ internal sealed class TransferOutCommandValidator : AbstractValidator<TransferOu
         RuleFor(x => x.DestinationWarehouseId)
          .NotEmpty();
 
-        RuleFor(x => x.Status)
-          .IsInEnum();
+        RuleFor(x => x.Items)
+           .Must(items =>
+               items.GroupBy(i => i.ProductId)
+                    .All(g => g.Count() == 1))
+           .WithMessage("Duplicate products in transfer are not allowed");
+
+
+        RuleFor(x => x)
+            .Must(x => x.SourceWarehouseId != x.DestinationWarehouseId)
+            .WithMessage("Source and destination warehouses must be different.");
 
         RuleForEach(x => x.Items).ChildRules(items =>
         {
@@ -32,8 +40,6 @@ internal sealed class TransferOutCommandValidator : AbstractValidator<TransferOu
             items.RuleFor(i => i.RequestedQuantity)
                 .NotEqual(0);
 
-            items.RuleFor(i => i.ReceivedQuantity)
-                .NotEqual(0);
         });
     }
 }

@@ -12,21 +12,6 @@ internal sealed class ConsumptionPolicy : ITransactionPolicyResolver
 
     public Task ValidateAsync(CreateTransactionCommand command, CancellationToken ct)
     {
-        if (command.OrderId is not null)
-        {
-            throw new DomainException("Consumption must not reference an order");
-        }
-
-        if (command.Items.Any(item => item.QuantityChange >= 0))
-        {
-            throw new DomainException("Consumption must reduce stock");
-        }
-
-        if (string.IsNullOrWhiteSpace(command.Reason))
-        {
-            throw new DomainException("Consumption requires a reason");
-        }
-
         return Task.CompletedTask;
     }
 }

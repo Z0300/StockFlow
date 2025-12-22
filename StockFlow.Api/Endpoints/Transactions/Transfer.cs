@@ -13,13 +13,11 @@ internal sealed class Transfer : IEndpoint
     private sealed record Request(
        Guid SourceWarehouseId,
         Guid DestinationWarehouseId,
-        TransferStatus Status,
         List<TransferOutRequestItems> Items);
 
     private sealed record TransferOutRequestItems(
         Guid ProductId,
-        int RequestedQuantity,
-        int ReceivedQuantity);
+        int RequestedQuantity);
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
@@ -31,11 +29,9 @@ internal sealed class Transfer : IEndpoint
             var command = new TransferOutCommand(
                 request.SourceWarehouseId,
                 request.DestinationWarehouseId,
-                request.Status,
                 [.. request.Items.Select(i => new TransferOutItems(
                     i.ProductId,
-                    i.RequestedQuantity,
-                    i.ReceivedQuantity))]);
+                    i.RequestedQuantity))]);
 
             Result<Guid> result = await handler.Handle(command, cancellationToken);
             return result.Match(Results.Ok, CustomResults.Problem);
