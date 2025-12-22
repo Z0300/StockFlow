@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Microsoft.EntityFrameworkCore;
 using StockFlow.Domain.Enums;
-using StockFlow.Domain.Exceptions;
 
 namespace StockFlow.Application.Transactions.Create.PolicyResolver;
 
-internal sealed class ReturnToSupplierPolicy : ITransactionPolicyResolver
+internal sealed class AdjustmentPolicy : ITransactionPolicyResolver
 {
-    public TransactionType Type => TransactionType.ReturnToSupplier;
+    public TransactionType Type => TransactionType.Adjustment;
 
     public Task ValidateAsync(CreateTransactionCommand command, CancellationToken ct)
     {
-
-
         return Task.CompletedTask;
     }
 }
