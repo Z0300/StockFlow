@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace StockFlow.Domain.Exceptions;
+﻿namespace StockFlow.Domain.Exceptions;
 
 public sealed class DomainException : Exception
 {

@@ -7,7 +7,7 @@ public enum TransactionType
     PurchaseReceipt = 10,
     CustomerReturn = 11,
 
-    SaleIssue = 20,
+    SalesIssue = 20,
     Consumption = 21,
     ReturnToSupplier = 22,
 

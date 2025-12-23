@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using StockFlow.Domain.Entities;
 
@@ -25,7 +22,7 @@ internal sealed class TransferItemConfiguration : IEntityTypeConfiguration<Trans
                .IsRequired();
 
         builder.HasOne(it => it.Transfer)
-               .WithMany(t => t.Items) 
+               .WithMany(t => t.Items)
                .HasForeignKey(it => it.TransferId)
                .OnDelete(DeleteBehavior.Cascade);
     }

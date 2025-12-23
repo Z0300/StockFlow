@@ -1,17 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using SharedKernel;
+﻿using SharedKernel;
 
 namespace StockFlow.Domain.DomainErrors;
 
 public static class TransferErrors
 {
-    public static Error ProductNotFound => Error.NotFound(
+    public static Error TransferNotFound(Guid TransferId) => Error.NotFound(
            "Transfers.NotFound",
-           $"One or more products do not exist.");
+           $"The transfer item with Id = '{TransferId}' was not found.");
 
-    public static Error InsufficientStock(Guid productId) => Error.Conflict(
-          "Transfers.NotFound",
-          $"Insufficient stock for product {productId}");
+    public static Error TransferAlreadyDispatched(Guid TransferId) => Error.NotFound(
+         "Transfers.TransferAlreadyDispatched",
+         $"The transfer item with Id = '{TransferId}' was not found.");
+
+    public static Error ProductNotFound => Error.NotFound(
+           "Transfers.ProductNotFound",
+           "One or more products do not exist.");
+
+    public static Error InsufficientStock(Guid productId) => Error.Failure(
+          "Transfers.InsufficientStock",
+          $"Insufficient stock for product '{productId}'");
 }

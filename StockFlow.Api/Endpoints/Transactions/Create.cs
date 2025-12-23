@@ -32,7 +32,7 @@ internal sealed class Create : IEndpoint
                 request.WarehouseId,
                 request.OrderId,
                 request.TransactionType,
-                request.Reason, 
+                request.Reason,
                 [..request.Items.Select(i => new TransactionItems(
                     i.ProductId,
                     i.QuantityChange,
