@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using StockFlow.Application.Abstractions.Messaging;
-using StockFlow.Domain.Enums;
+﻿using StockFlow.Application.Abstractions.Messaging;
 
 namespace StockFlow.Application.Transactions.TransferOut;
 
-public sealed record TransferOutCommand(
+public sealed record CreateTransferOutCommand(
     Guid SourceWarehouseId,
     Guid DestinationWarehouseId,
     List<TransferOutItems> Items) : ICommand<Guid>;

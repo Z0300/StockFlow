@@ -3,16 +3,15 @@ using StockFlow.Application.Abstractions.Data;
 using StockFlow.Application.Abstractions.Messaging;
 using StockFlow.Application.Transactions.Create.PolicyResolver;
 using StockFlow.Domain.Entities;
-using StockFlow.Domain.Enums;
 
 namespace StockFlow.Application.Transactions.Create;
 
 internal sealed class CreateTransactionCommandHandler(
     IApplicationDbContext context,
+    IDateTimeProvider dateTimeProvider,
     TransactionPolicyResolver resolver)
     : ICommandHandler<CreateTransactionCommand, Guid>
 {
-
     public async Task<Result<Guid>> Handle(
         CreateTransactionCommand command,
         CancellationToken cancellationToken)
@@ -34,7 +33,7 @@ internal sealed class CreateTransactionCommandHandler(
                 TransactionType = command.TransactionType,
                 Reason = command.Reason,
                 OrderId = command.OrderId,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = dateTimeProvider.UtcNow,
             })];
 
 

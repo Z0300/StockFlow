@@ -4,7 +4,6 @@ using StockFlow.Api.Extensions;
 using StockFlow.Api.Infrastructure;
 using StockFlow.Application.Abstractions.Messaging;
 using StockFlow.Application.Transactions.TransferOut;
-using StockFlow.Domain.Enums;
 
 namespace StockFlow.Api.Endpoints.Transactions;
 
@@ -21,12 +20,12 @@ internal sealed class Transfer : IEndpoint
 
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
-        app.MapPost("transactions/transferOut", async (
+        app.MapPost("transactions/transfer", async (
             Request request,
-            ICommandHandler<TransferOutCommand, Guid> handler,
+            ICommandHandler<CreateTransferOutCommand, Guid> handler,
             CancellationToken cancellationToken) =>
         {
-            var command = new TransferOutCommand(
+            var command = new CreateTransferOutCommand(
                 request.SourceWarehouseId,
                 request.DestinationWarehouseId,
                 [.. request.Items.Select(i => new TransferOutItems(

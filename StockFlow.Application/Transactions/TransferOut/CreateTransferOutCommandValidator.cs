@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using FluentValidation;
-using StockFlow.Application.Abstractions.Messaging;
-using StockFlow.Domain.Enums;
+﻿using FluentValidation;
 
 namespace StockFlow.Application.Transactions.TransferOut;
 
-internal sealed class TransferOutCommandValidator : AbstractValidator<TransferOutCommand>
+internal sealed class CreateTransferOutCommandValidator : AbstractValidator<CreateTransferOutCommand>
 {
-    public TransferOutCommandValidator()
+    public CreateTransferOutCommandValidator()
     {
         RuleFor(x => x.Items)
            .NotEmpty()

@@ -1,22 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using SharedKernel;
+﻿using SharedKernel;
 using StockFlow.Application.Abstractions.Data;
 using StockFlow.Application.Abstractions.Messaging;
 using StockFlow.Domain.DomainErrors;
 using StockFlow.Domain.Entities;
 using StockFlow.Domain.Enums;
-using StockFlow.Domain.Exceptions;
+
 
 
 namespace StockFlow.Application.Transactions.TransferOut;
 
-internal sealed class TransferOutCommandHandler(
-    IApplicationDbContext context)
-    : ICommandHandler<TransferOutCommand, Guid>
+internal sealed class CreateTransferOutCommandHandler(
+    IApplicationDbContext context,
+    IDateTimeProvider dateTimeProvider)
+    : ICommandHandler<CreateTransferOutCommand, Guid>
 {
-    public async Task<Result<Guid>> Handle(TransferOutCommand command, CancellationToken cancellationToken)
+    public async Task<Result<Guid>> Handle(CreateTransferOutCommand command, CancellationToken cancellationToken)
     {
 
         foreach (TransferOutItems item in command.Items)
@@ -39,6 +37,7 @@ internal sealed class TransferOutCommandHandler(
                 DestinationWarehouseId = command.DestinationWarehouseId,
                 SourceWarehouseId = command.SourceWarehouseId,
                 Status = TransferStatus.Draft,
+                CreatedAt = dateTimeProvider.UtcNow,
                 Items = [.. command.Items.Select(item => new TransferItem
                 {
                     ProductId = item.ProductId,

@@ -44,7 +44,7 @@ internal sealed class CreateTransactionCommandValidator : AbstractValidator<Crea
         });
 
         // Sale Issue Validation
-        When(x => x.TransactionType == TransactionType.SaleIssue, () =>
+        When(x => x.TransactionType == TransactionType.SalesIssue, () =>
         {
             RuleFor(x => x.OrderId).NotNull().NotEqual(Guid.Empty);
 

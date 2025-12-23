@@ -41,7 +41,7 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
                .IsRequired();
 
         builder.HasOne(t => t.Transfer)
-               .WithMany(tr => tr.Transactions) 
+               .WithMany(tr => tr.Transactions)
                .HasForeignKey(t => t.TransferId)
                .OnDelete(DeleteBehavior.Restrict);
 
