@@ -5,8 +5,6 @@ using StockFlow.Application.Abstractions.Behaviors;
 using StockFlow.Application.Abstractions.Messaging;
 using StockFlow.Application.Transactions.Create;
 using StockFlow.Application.Transactions.Create.PolicyResolver;
-using StockFlow.Application.Transactions.DispatchTransfer;
-using StockFlow.Domain.DomainEvents;
 
 namespace StockFlow.Application;
 
