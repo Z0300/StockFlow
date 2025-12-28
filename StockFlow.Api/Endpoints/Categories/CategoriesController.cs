@@ -14,7 +14,7 @@ using StockFlow.Domain.Entities.Categories;
 
 namespace StockFlow.Api.Endpoints.Categories;
 
-[Route("api/[controller]")]
+[Route("api/categories")]
 [ApiController]
 public class CategoriesController : ControllerBase
 {
@@ -59,7 +59,7 @@ public class CategoriesController : ControllerBase
         {
             return BadRequest(result.Error);
         }
-        return CreatedAtAction(nameof(GetCategory), new { id = result.Value }, result.Value);
+        return CreatedAtAction(nameof(GetCategory), new { categoryId = result.Value }, result.Value);
     }
 
     [HttpPut("{categoryId:guid}")]

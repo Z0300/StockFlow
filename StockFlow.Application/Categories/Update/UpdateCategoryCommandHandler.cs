@@ -26,8 +26,7 @@ internal sealed class UpdateCategoryCommandHandler
             return Result.Failure(CategoryErrors.NotFound);
         }
 
-        category.ChangeName(request.Name);
-        category.ChangeDescription(request.Description);
+        category.Update(request.Name, request.Description);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

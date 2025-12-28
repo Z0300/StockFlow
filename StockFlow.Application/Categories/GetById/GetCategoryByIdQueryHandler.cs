@@ -6,6 +6,7 @@ using StockFlow.Application.Abstractions.Data;
 using StockFlow.Application.Abstractions.Messaging;
 using StockFlow.Application.Categories.Shared;
 using StockFlow.Domain.Entities.Abstractions;
+using StockFlow.Domain.Entities.Categories;
 
 namespace StockFlow.Application.Categories.GetById;
 
@@ -32,7 +33,16 @@ internal sealed class GetCategoryByIdQueryHandler
                 WHERE id = @CategoryId
                 """;
 
-        CategoryResponse category = await connection.QueryFirstOrDefaultAsync<CategoryResponse>(sql);
+        CategoryResponse category = await connection.QueryFirstOrDefaultAsync<CategoryResponse>(sql,
+            new
+            {
+                request.CategoryId
+            });
+
+        if (category == null)
+        {
+            return Result.Failure<CategoryResponse>(CategoryErrors.NotFound);
+        }
 
         return category;
     }
