@@ -3,8 +3,11 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
+    <PackageVersion Include="Dapper" Version="2.1.66" />
     <PackageVersion Include="MassTransit" Version="8.5.7" />
     <PackageVersion Include="MassTransit.RabbitMQ" Version="8.5.7" />
+    <PackageVersion Include="MediatR" Version="12.5.0" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.1" />
     <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageVersion Include="Quartz.Extensions.Hosting" Version="3.15.1" />
@@ -24,6 +27,7 @@
     <PackageVersion Include="Serilog" Version="4.3.0" />
     <PackageVersion Include="Serilog.Sinks.Console" Version="6.1.1" />
     <PackageVersion Include="Serilog.Sinks.Seq" Version="9.0.0" />
+    <PackageVersion Include="StackExchange.Redis" Version="2.10.1" />
     <PackageVersion Include="Swashbuckle.AspNetCore.Swagger" Version="10.0.1" />
     <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.0.1" />
     <PackageVersion Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.0.1" />

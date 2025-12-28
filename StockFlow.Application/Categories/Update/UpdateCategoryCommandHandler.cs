@@ -1,29 +1,35 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SharedKernel;
-using StockFlow.Application.Abstractions.Data;
-using StockFlow.Application.Abstractions.Messaging;
-using StockFlow.Domain.DomainErrors;
-using StockFlow.Domain.Entities;
+﻿using StockFlow.Application.Abstractions.Messaging;
+using StockFlow.Domain.Entities.Abstractions;
+using StockFlow.Domain.Entities.Categories;
 
 namespace StockFlow.Application.Categories.Update;
 
-internal sealed class UpdateCategoryCommandHandler(IApplicationDbContext context)
+internal sealed class UpdateCategoryCommandHandler
     : ICommandHandler<UpdateCategoryCommand>
 {
-    public async Task<Result> Handle(UpdateCategoryCommand command, CancellationToken cancellationToken)
+    private readonly ICategoryRepository _categoryRepository;
+    private readonly IUnitOfWork _unitOfWork;
+
+    public UpdateCategoryCommandHandler(
+       ICategoryRepository categoryRepository,
+       IUnitOfWork unitOfWork)
     {
-        Category? category = await context.Categories
-            .SingleOrDefaultAsync(c => c.Id == command.Id, cancellationToken);
+        _categoryRepository = categoryRepository;
+        _unitOfWork = unitOfWork;
+    }
+    public async Task<Result> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
+    {
+        Category? category = await _categoryRepository.GetByIdAsync(new CategoryId(request.Id), cancellationToken);
 
         if (category is null)
         {
-            return Result.Failure(CategoryErrors.NotFound(command.Id));
+            return Result.Failure(CategoryErrors.NotFound);
         }
 
-        category.Name = command.Name;
-        category.Description = command.Description;
+        category.ChangeName(request.Name);
+        category.ChangeDescription(request.Description);
 
-        await context.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success();
     }

@@ -1,28 +1,34 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SharedKernel;
-using StockFlow.Application.Abstractions.Data;
-using StockFlow.Application.Abstractions.Messaging;
-using StockFlow.Domain.DomainErrors;
-using StockFlow.Domain.Entities;
+﻿using StockFlow.Application.Abstractions.Messaging;
+using StockFlow.Domain.Entities.Abstractions;
+using StockFlow.Domain.Entities.Suppliers;
 
 namespace StockFlow.Application.Suppliers.Delete;
 
-internal sealed class DeleteSupplierCommandHandler(IApplicationDbContext context)
+internal sealed class DeleteSupplierCommandHandler
     : ICommandHandler<DeleteSupplierCommand>
 {
-    public async Task<Result> Handle(DeleteSupplierCommand command, CancellationToken cancellationToken)
+    private readonly ISupplierRepository _supplierRepository;
+    private readonly IUnitOfWork _unitOfWork;
+    public DeleteSupplierCommandHandler(
+        ISupplierRepository supplierRepository,
+        IUnitOfWork unitOfWork)
     {
-        Supplier? supplier = await context.Suppliers
-            .SingleOrDefaultAsync(x => x.Id == command.SupplierId, cancellationToken);
+        _supplierRepository = supplierRepository;
+        _unitOfWork = unitOfWork;
+    }
+    public async Task<Result> Handle(DeleteSupplierCommand request, CancellationToken cancellationToken)
+    {
+        Supplier? supplier = await _supplierRepository.GetByIdAsync(new SupplierId(request.SupplierId), cancellationToken);
 
         if (supplier is null)
         {
-            return Result.Failure(SupplierErrors.NotFound(command.SupplierId));
+            return Result.Failure(SupplierErrors.NotFound);
         }
 
-        context.Suppliers.Remove(supplier);
-        await context.SaveChangesAsync(cancellationToken);
-        return Result.Success();
+        _supplierRepository.Remove(supplier);
 
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return Result.Success();
     }
 }

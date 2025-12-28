@@ -1,10 +1,6 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-using SharedKernel;
 using StockFlow.Application.Abstractions.Behaviors;
-using StockFlow.Application.Abstractions.Messaging;
-using StockFlow.Application.Transactions.Create;
-using StockFlow.Application.Transactions.Create.PolicyResolver;
 
 namespace StockFlow.Application;
 
@@ -12,37 +8,17 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        services.Scan(scan => scan.FromAssembliesOf(typeof(DependencyInjection))
-            .AddClasses(classes => classes.AssignableTo(typeof(IQueryHandler<,>)), publicOnly: false)
-                .AsImplementedInterfaces()
-                .WithScopedLifetime()
-            .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<>)), publicOnly: false)
-                .AsImplementedInterfaces()
-                .WithScopedLifetime()
-            .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<,>)), publicOnly: false)
-                .AsImplementedInterfaces()
-                .WithScopedLifetime());
+        services.AddMediatR(configuration =>
+        {
+            configuration.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);
 
-        services.AddScoped<TransactionPolicyResolver>();
-        services.AddScoped<ITransactionPolicyResolver, OpeningBalancePolicy>();
-        services.AddScoped<ITransactionPolicyResolver, PurchaseReceiptPolicy>();
-        services.AddScoped<ITransactionPolicyResolver, CustomerReturnPolicy>();
-        services.AddScoped<ITransactionPolicyResolver, SaleIssuePolicy>();
-        services.AddScoped<ITransactionPolicyResolver, ConsumptionPolicy>();
-        services.AddScoped<ITransactionPolicyResolver, ReturnToSupplierPolicy>();
-        services.AddScoped<ITransactionPolicyResolver, AdjustmentPolicy>();
+            //When sending a command, it's going to first enter the logging behavior, run the logging statement and then execute the command handler before returning the response
+            configuration.AddOpenBehavior(typeof(LoggingBehavior<,>));
 
-        services.Decorate(typeof(ICommandHandler<,>), typeof(ValidationDecorator.CommandHandler<,>));
-        services.Decorate(typeof(ICommandHandler<>), typeof(ValidationDecorator.CommandBaseHandler<>));
+            configuration.AddOpenBehavior(typeof(ValidationBehavior<,>));
 
-        services.Decorate(typeof(IQueryHandler<,>), typeof(LoggingDecorator.QueryHandler<,>));
-        services.Decorate(typeof(ICommandHandler<,>), typeof(LoggingDecorator.CommandHandler<,>));
-        services.Decorate(typeof(ICommandHandler<>), typeof(LoggingDecorator.CommandBaseHandler<>));
-
-        services.Scan(scan => scan.FromAssembliesOf(typeof(DependencyInjection))
-            .AddClasses(classes => classes.AssignableTo(typeof(IDomainEventHandler<>)), publicOnly: false)
-            .AsImplementedInterfaces()
-            .WithScopedLifetime());
+            configuration.AddOpenBehavior(typeof(QueryCachingBehavior<,>));
+        });
 
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly, includeInternalTypes: true);
 

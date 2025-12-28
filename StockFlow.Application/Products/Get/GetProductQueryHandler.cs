@@ -1,26 +1,36 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SharedKernel;
+﻿using System.Data;
+using Dapper;
+using Microsoft.EntityFrameworkCore;
 using StockFlow.Application.Abstractions.Data;
 using StockFlow.Application.Abstractions.Messaging;
+using StockFlow.Application.Categories.Shared;
+using StockFlow.Domain.Entities.Abstractions;
 
 namespace StockFlow.Application.Products.Get;
 
-internal sealed class GetProductQueryHandler(IApplicationDbContext context)
-    : IQueryHandler<GetProductQuery, List<GetProductResponse>>
+internal sealed class GetProductQueryHandler
+    : IQueryHandler<GetProductQuery, IReadOnlyList<ProductsResponse>>
 {
-    public async Task<Result<List<GetProductResponse>>> Handle(GetProductQuery query, CancellationToken cancellationToken)
+    private readonly ISqlConnectionFactory _connectionFactory;
+    public GetProductQueryHandler(ISqlConnectionFactory connectionFactory)
     {
-        List<GetProductResponse> products = await context.Products
-            .AsNoTracking()
-            .Select(product => new GetProductResponse
-            {
-                Id = product.Id,
-                Name = product.Name,
-                Price = product.Price,
-                Category = product.Category != null ? product.Category.Name : string.Empty
-            })
-            .ToListAsync(cancellationToken);
+        _connectionFactory = connectionFactory;
+    }
+    public async Task<Result<IReadOnlyList<ProductsResponse>>> Handle(GetProductQuery query, CancellationToken cancellationToken)
+    {
+        using IDbConnection connection = _connectionFactory.CreateConnection();
 
-        return products;
+        const string sql = """
+                SELECT 
+                    id AS ProductId,
+                    name AS ProductName,
+                    sku AS ProductSku,
+                    price AS ProductPrice,
+                FROM products
+                """;
+
+        IEnumerable<ProductsResponse> products = await connection.QueryAsync<ProductsResponse>(sql);
+
+        return products.ToList();
     }
 }

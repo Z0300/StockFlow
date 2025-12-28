@@ -1,54 +1,63 @@
-﻿using SharedKernel;
-using StockFlow.Application.Abstractions.Data;
+﻿using StockFlow.Application.Abstractions.Clock;
 using StockFlow.Application.Abstractions.Messaging;
-using StockFlow.Domain.DomainErrors;
-using StockFlow.Domain.Entities;
-using StockFlow.Domain.Enums;
-
-
+using StockFlow.Domain.Entities.Abstractions;
+using StockFlow.Domain.Entities.Products;
+using StockFlow.Domain.Entities.Transactions;
+using StockFlow.Domain.Entities.TransferItems;
+using StockFlow.Domain.Entities.Transfers;
+using StockFlow.Domain.Entities.Warehouses;
 
 namespace StockFlow.Application.Transactions.TransferOut;
 
-internal sealed class CreateTransferOutCommandHandler(
-    IApplicationDbContext context,
-    IDateTimeProvider dateTimeProvider)
+internal sealed class CreateTransferOutCommandHandler
     : ICommandHandler<CreateTransferOutCommand, Guid>
 {
-    public async Task<Result<Guid>> Handle(CreateTransferOutCommand command, CancellationToken cancellationToken)
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly ITransferRepository _transferRepository;
+    private readonly ITransactionRepository _transactionRepository;
+    private readonly IDateTimeProvider _dateTimeProvider;
+
+    public CreateTransferOutCommandHandler(
+        IUnitOfWork unitOfWork,
+        ITransferRepository transferRepository,
+        ITransactionRepository transactionRepository,
+        IDateTimeProvider dateTimeProvider)
+    {
+        _unitOfWork = unitOfWork;
+        _transferRepository = transferRepository;
+        _transactionRepository = transactionRepository;
+        _dateTimeProvider = dateTimeProvider;
+    }
+    public async Task<Result<Guid>> Handle(CreateTransferOutCommand request, CancellationToken cancellationToken)
     {
 
-        foreach (TransferOutItems item in command.Items)
+        foreach (TransferOutItems item in request.Items)
         {
-            int availableQuantity = context.Transactions
-                .Where(stock => stock.WarehouseId == command.SourceWarehouseId &&
-                        stock.ProductId == item.ProductId)
-                .Sum(stock => stock.QuantityChange);
+            int availableQuantity = await _transactionRepository.GetAvailableQuantity(
+                new WarehouseId(request.SourceWarehouseId),
+                new ProductId(item.ProductId),
+                cancellationToken);
 
             if (availableQuantity < item.RequestedQuantity)
             {
-                return Result.Failure<Guid>(TransferErrors.InsufficientStock(item.ProductId));
+                return Result.Failure<Guid>(TransferErrors.InsufficientStock);
             }
         }
 
-        var transfer =
-            new Transfer
-            {
-                Id = Guid.NewGuid(),
-                DestinationWarehouseId = command.DestinationWarehouseId,
-                SourceWarehouseId = command.SourceWarehouseId,
-                Status = TransferStatus.Draft,
-                CreatedAt = dateTimeProvider.UtcNow,
-                Items = [.. command.Items.Select(item => new TransferItem
-                {
-                    ProductId = item.ProductId,
-                    RequestedQuantity = item.RequestedQuantity,
-                    ReceivedQuantity = 0,
-                })],
-            };
 
-        context.Transfers.Add(transfer);
-        await context.SaveChangesAsync(cancellationToken);
+        var transfer = Transfer.CreateTransfer(
+             new WarehouseId(request.SourceWarehouseId),
+             new WarehouseId(request.DestinationWarehouseId),
+             _dateTimeProvider.UtcNow,
+             request.Items.Select(i =>
+                 new TransferItem(
+                     new ProductId(i.ProductId),
+                     i.RequestedQuantity)));
 
-        return transfer.Id;
+
+        _transferRepository.Add(transfer);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return transfer.Id.Value;
     }
 }

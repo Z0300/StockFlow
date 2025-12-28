@@ -1,10 +1,11 @@
-﻿using System.Security.Claims;
+﻿
+using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using StockFlow.Application.Abstractions.Authentication;
-using StockFlow.Domain.Entities;
+using StockFlow.Domain.Entities.Users;
 
 namespace StockFlow.Infrastructure.Authentication;
 
@@ -22,7 +23,7 @@ internal sealed class TokenProvider(IConfiguration configuration) : ITokenProvid
             Subject = new ClaimsIdentity(
             [
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email)
+                new Claim(JwtRegisteredClaimNames.Email, user.Email.ToString())
             ]),
             Expires = DateTime.UtcNow.AddMinutes(configuration.GetValue<int>("Jwt:ExpirationInMinutes")),
             SigningCredentials = credentials,

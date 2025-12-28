@@ -2,7 +2,7 @@
 
 public sealed class WarehouseResponse
 {
-    public Guid Id { get; set; }
-    public string Name { get; set; }
-    public string Location { get; set; }
+    public Guid WarehouseId { get; init; }
+    public string WarehouseName { get; init; }
+    public string WarehouseLocation { get; init; }
 }

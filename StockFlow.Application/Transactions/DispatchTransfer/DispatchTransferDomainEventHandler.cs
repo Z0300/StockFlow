@@ -1,39 +1,54 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SharedKernel;
-using StockFlow.Application.Abstractions.Data;
-using StockFlow.Domain.DomainEvents;
-using StockFlow.Domain.Entities;
-using StockFlow.Domain.Enums;
-using StockFlow.Domain.Exceptions;
+﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
+using StockFlow.Application.Abstractions.Clock;
+using StockFlow.Domain.Entities.Orders;
+using StockFlow.Domain.Entities.Products;
+using StockFlow.Domain.Entities.Transactions;
+using StockFlow.Domain.Entities.Transactions.Enums;
+using StockFlow.Domain.Entities.TransferItems;
+using StockFlow.Domain.Entities.Transfers;
+using StockFlow.Domain.Entities.Transfers.Events;
+using StockFlow.Domain.Entities.Warehouses;
+using StockFlow.Domain.Shared;
 
 
 
 namespace StockFlow.Application.Transactions.DispatchTransfer;
 
-internal sealed class DispatchTransferDomainEventHandler(IApplicationDbContext context, IDateTimeProvider dateTimeProvider) : IDomainEventHandler<DispatchTransferDomainEvent>
+internal sealed class DispatchTransferDomainEventHandler : INotificationHandler<TransferDispatchedEvent>
 {
-    public async Task HandleAsync(DispatchTransferDomainEvent domainEvent, CancellationToken cancellationToken)
+    private readonly ITransferRepository _transferRepository;
+    private readonly IDateTimeProvider _dateTimeProvider;
+    private readonly ITransactionRepository _transactionRepository;
+
+    public DispatchTransferDomainEventHandler(
+    ITransferRepository transferRepository,
+    IDateTimeProvider dateTimeProvider,
+    ITransactionRepository transactionRepository)
     {
-        Transfer transfer = await context.Transfers
-                    .Include(t => t.Items)
-                    .SingleOrDefaultAsync(t => t.Id == domainEvent.TransferId, cancellationToken) ??
-               throw new DomainException($"Transfer with Id {domainEvent.TransferId} not found.");
+        _transferRepository = transferRepository;
+        _dateTimeProvider = dateTimeProvider;
+        _transactionRepository = transactionRepository;
+    }
+    public async Task Handle(TransferDispatchedEvent notification, CancellationToken cancellationToken)
+    {
+        Transfer? transfer = await _transferRepository.GetByIdAsync(notification.TransferId, cancellationToken);
 
-        var transactionId = Guid.NewGuid();
+        if (transfer is null)
+        {
+            return;
+        }
 
-        List<Transaction> transactions = [.. transfer.Items.Select(item =>
-            new Transaction
-            {
-                OperationId = transactionId,
-                ProductId = item.ProductId,
-                WarehouseId = transfer.SourceWarehouseId,
-                QuantityChange = -item.RequestedQuantity,
-                TransactionType = TransactionType.TransferOut,
-                CreatedAt = dateTimeProvider.UtcNow,
-                TransferId = transfer.Id
-            })];
+        IReadOnlyCollection<Transaction> transctions = Transaction.CreateMany(
+            transfer.SourceWarehouseId,
+            TransactionType.TransferOut,
+            null,
+            null,
+            transfer.Id,
+            _dateTimeProvider.UtcNow,
+            transfer.Items.Select<TransferItem, (ProductId, int, Money?)>(i =>
+                (i.ProductId, i.ReceivedQuantity ?? 0, null)));
 
-        await context.Transactions.BulkInsertOptimizedAsync(transactions,
-            options => options.IncludeGraph = true);
+        await _transactionRepository.BulkInsertAsync(transctions, cancellationToken);
     }
 }

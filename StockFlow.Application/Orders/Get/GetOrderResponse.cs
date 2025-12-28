@@ -1,10 +1,11 @@
-﻿namespace StockFlow.Application.Orders.Get;
+﻿using StockFlow.Application.Suppliers.Shared;
 
-public sealed class GetOrderResponse
+namespace StockFlow.Application.Orders.Get;
+
+public sealed class OrdersResponse
 {
-    public Guid Id { get; set; }
-    public DateTime OrderDate { get; set; }
-    public string SupplierName { get; set; } = string.Empty;
-    public decimal TotalAmount { get; set; }
-    public string Status { get; set; } = string.Empty;
+    public Guid OrderId { get; init; }
+    public DateTime OrderDate { get; init; }
+    public decimal OrderTotalAmount { get; init; }
+    public int OrderStatus { get; init; }
 }

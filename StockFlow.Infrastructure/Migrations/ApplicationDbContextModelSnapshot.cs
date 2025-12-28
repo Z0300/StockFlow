@@ -24,15 +24,15 @@ namespace StockFlow.Infrastructure.Migrations
 
             modelBuilder.Entity("RoleUser", b =>
                 {
-                    b.Property<int>("RoleId")
+                    b.Property<int>("RolesId")
                         .HasColumnType("integer")
-                        .HasColumnName("role_id");
+                        .HasColumnName("roles_id");
 
                     b.Property<Guid>("UsersId")
                         .HasColumnType("uuid")
                         .HasColumnName("users_id");
 
-                    b.HasKey("RoleId", "UsersId")
+                    b.HasKey("RolesId", "UsersId")
                         .HasName("pk_role_user");
 
                     b.HasIndex("UsersId")
@@ -41,10 +41,9 @@ namespace StockFlow.Infrastructure.Migrations
                     b.ToTable("role_user", (string)null);
                 });
 
-            modelBuilder.Entity("StockFlow.Domain.Entities.Category", b =>
+            modelBuilder.Entity("StockFlow.Domain.Entities.Categories.Category", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
@@ -63,17 +62,12 @@ namespace StockFlow.Infrastructure.Migrations
                     b.HasKey("Id")
                         .HasName("pk_categories");
 
-                    b.HasIndex("Name")
-                        .IsUnique()
-                        .HasDatabaseName("ix_categories_name");
-
                     b.ToTable("categories", (string)null);
                 });
 
-            modelBuilder.Entity("StockFlow.Domain.Entities.Order", b =>
+            modelBuilder.Entity("StockFlow.Domain.Entities.Orders.Order", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
@@ -109,10 +103,9 @@ namespace StockFlow.Infrastructure.Migrations
                     b.ToTable("orders", (string)null);
                 });
 
-            modelBuilder.Entity("StockFlow.Domain.Entities.OrderItem", b =>
+            modelBuilder.Entity("StockFlow.Domain.Entities.Orders.OrderItem", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
@@ -128,11 +121,6 @@ namespace StockFlow.Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("quantity");
 
-                    b.Property<decimal>("UnitPrice")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)")
-                        .HasColumnName("unit_price");
-
                     b.HasKey("Id")
                         .HasName("pk_order_items");
 
@@ -145,281 +133,13 @@ namespace StockFlow.Infrastructure.Migrations
                     b.ToTable("order_items", (string)null);
                 });
 
-            modelBuilder.Entity("StockFlow.Domain.Entities.Permission", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("name");
-
-                    b.HasKey("Id")
-                        .HasName("pk_permissions");
-
-                    b.ToTable("permissions", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1000,
-                            Name = "InventoryView"
-                        },
-                        new
-                        {
-                            Id = 1001,
-                            Name = "InventoryCreate"
-                        },
-                        new
-                        {
-                            Id = 1002,
-                            Name = "InventoryUpdate"
-                        },
-                        new
-                        {
-                            Id = 1003,
-                            Name = "InventoryDelete"
-                        },
-                        new
-                        {
-                            Id = 1004,
-                            Name = "InventoryAdjustStock"
-                        },
-                        new
-                        {
-                            Id = 1005,
-                            Name = "InventoryReserveStock"
-                        },
-                        new
-                        {
-                            Id = 1006,
-                            Name = "InventoryReleaseStock"
-                        },
-                        new
-                        {
-                            Id = 1007,
-                            Name = "InventoryTransferStock"
-                        },
-                        new
-                        {
-                            Id = 1008,
-                            Name = "InventoryViewCost"
-                        },
-                        new
-                        {
-                            Id = 1009,
-                            Name = "InventoryUpdateCost"
-                        },
-                        new
-                        {
-                            Id = 1010,
-                            Name = "InventoryViewValuation"
-                        },
-                        new
-                        {
-                            Id = 1200,
-                            Name = "InventoryCreateAdjustment"
-                        },
-                        new
-                        {
-                            Id = 1201,
-                            Name = "InventoryViewAdjustment"
-                        },
-                        new
-                        {
-                            Id = 1202,
-                            Name = "InventoryApproveAdjustment"
-                        },
-                        new
-                        {
-                            Id = 1203,
-                            Name = "InventoryRejectAdjustment"
-                        },
-                        new
-                        {
-                            Id = 1300,
-                            Name = "WarehouseView"
-                        },
-                        new
-                        {
-                            Id = 1301,
-                            Name = "WarehouseCreate"
-                        },
-                        new
-                        {
-                            Id = 1302,
-                            Name = "WarehouseUpdate"
-                        },
-                        new
-                        {
-                            Id = 1303,
-                            Name = "WarehouseDelete"
-                        },
-                        new
-                        {
-                            Id = 1304,
-                            Name = "WarehouseAssignUser"
-                        },
-                        new
-                        {
-                            Id = 1305,
-                            Name = "WarehouseTransferInventory"
-                        },
-                        new
-                        {
-                            Id = 1400,
-                            Name = "ProcurementViewSupplier"
-                        },
-                        new
-                        {
-                            Id = 1401,
-                            Name = "ProcurementCreateSupplier"
-                        },
-                        new
-                        {
-                            Id = 1402,
-                            Name = "ProcurementUpdateSupplier"
-                        },
-                        new
-                        {
-                            Id = 1403,
-                            Name = "ProcurementCreatePurchaseOrder"
-                        },
-                        new
-                        {
-                            Id = 1404,
-                            Name = "ProcurementUpdatePurchaseOrder"
-                        },
-                        new
-                        {
-                            Id = 1405,
-                            Name = "ProcurementApprovePurchaseOrder"
-                        },
-                        new
-                        {
-                            Id = 1406,
-                            Name = "ProcurementReceiveGoods"
-                        },
-                        new
-                        {
-                            Id = 1500,
-                            Name = "ReportViewInventory"
-                        },
-                        new
-                        {
-                            Id = 1501,
-                            Name = "ReportViewMovement"
-                        },
-                        new
-                        {
-                            Id = 1502,
-                            Name = "ReportViewValuation"
-                        },
-                        new
-                        {
-                            Id = 1503,
-                            Name = "ReportExport"
-                        },
-                        new
-                        {
-                            Id = 1504,
-                            Name = "AuditViewLogs"
-                        },
-                        new
-                        {
-                            Id = 1505,
-                            Name = "AuditExportLogs"
-                        },
-                        new
-                        {
-                            Id = 1600,
-                            Name = "UserView"
-                        },
-                        new
-                        {
-                            Id = 1601,
-                            Name = "UserCreate"
-                        },
-                        new
-                        {
-                            Id = 1602,
-                            Name = "UserUpdate"
-                        },
-                        new
-                        {
-                            Id = 1603,
-                            Name = "UserDeactivate"
-                        },
-                        new
-                        {
-                            Id = 1604,
-                            Name = "RoleView"
-                        },
-                        new
-                        {
-                            Id = 1605,
-                            Name = "RoleCreate"
-                        },
-                        new
-                        {
-                            Id = 1606,
-                            Name = "RoleUpdate"
-                        },
-                        new
-                        {
-                            Id = 1607,
-                            Name = "PermissionAssign"
-                        },
-                        new
-                        {
-                            Id = 1608,
-                            Name = "PermissionRevoke"
-                        },
-                        new
-                        {
-                            Id = 1700,
-                            Name = "IntegrationInventorySync"
-                        },
-                        new
-                        {
-                            Id = 1701,
-                            Name = "IntegrationInventoryAdjust"
-                        },
-                        new
-                        {
-                            Id = 1702,
-                            Name = "IntegrationInventoryExport"
-                        },
-                        new
-                        {
-                            Id = 1703,
-                            Name = "IntegrationWebhookReceive"
-                        },
-                        new
-                        {
-                            Id = 1800,
-                            Name = "SystemViewSettings"
-                        },
-                        new
-                        {
-                            Id = 1801,
-                            Name = "SystemUpdateSettings"
-                        });
-                });
-
-            modelBuilder.Entity("StockFlow.Domain.Entities.Product", b =>
+            modelBuilder.Entity("StockFlow.Domain.Entities.Products.Product", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<Guid>("CategoryId")
+                    b.Property<Guid?>("CategoryId")
                         .HasColumnType("uuid")
                         .HasColumnName("category_id");
 
@@ -428,11 +148,6 @@ namespace StockFlow.Infrastructure.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
                         .HasColumnName("name");
-
-                    b.Property<decimal>("Price")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("numeric(18,2)")
-                        .HasColumnName("price");
 
                     b.Property<string>("Sku")
                         .IsRequired()
@@ -446,556 +161,16 @@ namespace StockFlow.Infrastructure.Migrations
                     b.HasIndex("CategoryId")
                         .HasDatabaseName("ix_products_category_id");
 
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("ix_products_name");
+
                     b.ToTable("products", (string)null);
                 });
 
-            modelBuilder.Entity("StockFlow.Domain.Entities.Role", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("name");
-
-                    b.HasKey("Id")
-                        .HasName("pk_roles");
-
-                    b.ToTable("roles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Admin"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "InventoryManager"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "WarehouseStaff"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "Auditor"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "Procurement"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "SystemIntegration "
-                        });
-                });
-
-            modelBuilder.Entity("StockFlow.Domain.Entities.RolePermission", b =>
-                {
-                    b.Property<int>("RoleId")
-                        .HasColumnType("integer")
-                        .HasColumnName("role_id");
-
-                    b.Property<int>("PermissionId")
-                        .HasColumnType("integer")
-                        .HasColumnName("permission_id");
-
-                    b.HasKey("RoleId", "PermissionId")
-                        .HasName("pk_role_permissions");
-
-                    b.HasIndex("PermissionId")
-                        .HasDatabaseName("ix_role_permissions_permission_id");
-
-                    b.ToTable("role_permissions", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1000
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1001
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1002
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1003
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1004
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1005
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1006
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1007
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1008
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1009
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1010
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1200
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1201
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1202
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1203
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1300
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1301
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1302
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1303
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1304
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1305
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1400
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1401
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1402
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1403
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1404
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1405
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1406
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1500
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1501
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1502
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1503
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1504
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1505
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1600
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1601
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1602
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1603
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1604
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1605
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1606
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1607
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1608
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1700
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1701
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1702
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1703
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1800
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1801
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 1000
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 1001
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 1002
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 1003
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 1004
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 1007
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 1008
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 1009
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 1010
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 1200
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 1201
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 1202
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 1203
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 1500
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 1501
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 1502
-                        },
-                        new
-                        {
-                            RoleId = 3,
-                            PermissionId = 1000
-                        },
-                        new
-                        {
-                            RoleId = 3,
-                            PermissionId = 1004
-                        },
-                        new
-                        {
-                            RoleId = 3,
-                            PermissionId = 1005
-                        },
-                        new
-                        {
-                            RoleId = 3,
-                            PermissionId = 1006
-                        },
-                        new
-                        {
-                            RoleId = 3,
-                            PermissionId = 1200
-                        },
-                        new
-                        {
-                            RoleId = 3,
-                            PermissionId = 1201
-                        },
-                        new
-                        {
-                            RoleId = 3,
-                            PermissionId = 1300
-                        },
-                        new
-                        {
-                            RoleId = 4,
-                            PermissionId = 1000
-                        },
-                        new
-                        {
-                            RoleId = 4,
-                            PermissionId = 1008
-                        },
-                        new
-                        {
-                            RoleId = 4,
-                            PermissionId = 1010
-                        },
-                        new
-                        {
-                            RoleId = 4,
-                            PermissionId = 1500
-                        },
-                        new
-                        {
-                            RoleId = 4,
-                            PermissionId = 1501
-                        },
-                        new
-                        {
-                            RoleId = 4,
-                            PermissionId = 1502
-                        },
-                        new
-                        {
-                            RoleId = 4,
-                            PermissionId = 1503
-                        },
-                        new
-                        {
-                            RoleId = 4,
-                            PermissionId = 1504
-                        },
-                        new
-                        {
-                            RoleId = 4,
-                            PermissionId = 1505
-                        },
-                        new
-                        {
-                            RoleId = 5,
-                            PermissionId = 1400
-                        },
-                        new
-                        {
-                            RoleId = 5,
-                            PermissionId = 1401
-                        },
-                        new
-                        {
-                            RoleId = 5,
-                            PermissionId = 1402
-                        },
-                        new
-                        {
-                            RoleId = 5,
-                            PermissionId = 1403
-                        },
-                        new
-                        {
-                            RoleId = 5,
-                            PermissionId = 1404
-                        },
-                        new
-                        {
-                            RoleId = 5,
-                            PermissionId = 1405
-                        },
-                        new
-                        {
-                            RoleId = 5,
-                            PermissionId = 1406
-                        },
-                        new
-                        {
-                            RoleId = 5,
-                            PermissionId = 1000
-                        },
-                        new
-                        {
-                            RoleId = 6,
-                            PermissionId = 1700
-                        },
-                        new
-                        {
-                            RoleId = 6,
-                            PermissionId = 1701
-                        },
-                        new
-                        {
-                            RoleId = 6,
-                            PermissionId = 1702
-                        },
-                        new
-                        {
-                            RoleId = 6,
-                            PermissionId = 1000
-                        },
-                        new
-                        {
-                            RoleId = 6,
-                            PermissionId = 1004
-                        });
-                });
-
-            modelBuilder.Entity("StockFlow.Domain.Entities.Supplier", b =>
+            modelBuilder.Entity("StockFlow.Domain.Entities.Suppliers.Supplier", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
@@ -1017,20 +192,15 @@ namespace StockFlow.Infrastructure.Migrations
                     b.ToTable("suppliers", (string)null);
                 });
 
-            modelBuilder.Entity("StockFlow.Domain.Entities.Transaction", b =>
+            modelBuilder.Entity("StockFlow.Domain.Entities.Transactions.Transaction", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
-
-                    b.Property<Guid>("OperationId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("operation_id");
 
                     b.Property<Guid?>("OrderId")
                         .HasColumnType("uuid")
@@ -1057,20 +227,12 @@ namespace StockFlow.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("transfer_id");
 
-                    b.Property<decimal?>("UnitCost")
-                        .HasPrecision(18, 4)
-                        .HasColumnType("numeric(18,4)")
-                        .HasColumnName("unit_cost");
-
                     b.Property<Guid>("WarehouseId")
                         .HasColumnType("uuid")
                         .HasColumnName("warehouse_id");
 
                     b.HasKey("Id")
                         .HasName("pk_transactions");
-
-                    b.HasIndex("OperationId")
-                        .HasDatabaseName("ix_transactions_operation_id");
 
                     b.HasIndex("OrderId")
                         .HasDatabaseName("ix_transactions_order_id");
@@ -1087,48 +249,9 @@ namespace StockFlow.Infrastructure.Migrations
                     b.ToTable("transactions", (string)null);
                 });
 
-            modelBuilder.Entity("StockFlow.Domain.Entities.Transfer", b =>
+            modelBuilder.Entity("StockFlow.Domain.Entities.TransferItems.TransferItem", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<Guid>("DestinationWarehouseId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("destination_warehouse_id");
-
-                    b.Property<DateTime?>("DispatchAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("dispatch_at");
-
-                    b.Property<DateTime?>("ReceivedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("received_at");
-
-                    b.Property<Guid>("SourceWarehouseId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("source_warehouse_id");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("status");
-
-                    b.HasKey("Id")
-                        .HasName("pk_transfers");
-
-                    b.ToTable("transfers", (string)null);
-                });
-
-            modelBuilder.Entity("StockFlow.Domain.Entities.TransferItem", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
@@ -1161,34 +284,142 @@ namespace StockFlow.Infrastructure.Migrations
                     b.ToTable("transfer_items", (string)null);
                 });
 
-            modelBuilder.Entity("StockFlow.Domain.Entities.User", b =>
+            modelBuilder.Entity("StockFlow.Domain.Entities.Transfers.Transfer", b =>
                 {
                     b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTime?>("DispatchAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("dispatch_at");
+
+                    b.Property<DateTime?>("ReceivedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("received_at");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
+                    b.HasKey("Id")
+                        .HasName("pk_transfers");
+
+                    b.ToTable("transfers", (string)null);
+                });
+
+            modelBuilder.Entity("StockFlow.Domain.Entities.Users.Permission", b =>
+                {
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id")
+                        .HasName("pk_permissions");
+
+                    b.ToTable("permissions", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "users:full_access"
+                        });
+                });
+
+            modelBuilder.Entity("StockFlow.Domain.Entities.Users.Role", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id")
+                        .HasName("pk_roles");
+
+                    b.ToTable("roles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Admin"
+                        });
+                });
+
+            modelBuilder.Entity("StockFlow.Domain.Entities.Users.RolePermission", b =>
+                {
+                    b.Property<int>("RoleId")
+                        .HasColumnType("integer")
+                        .HasColumnName("role_id");
+
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("integer")
+                        .HasColumnName("permission_id");
+
+                    b.HasKey("RoleId", "PermissionId")
+                        .HasName("pk_role_permissions");
+
+                    b.HasIndex("PermissionId")
+                        .HasDatabaseName("ix_role_permissions_permission_id");
+
+                    b.ToTable("role_permissions", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 1
+                        });
+                });
+
+            modelBuilder.Entity("StockFlow.Domain.Entities.Users.User", b =>
+                {
+                    b.Property<Guid>("Id")
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(400)
+                        .HasColumnType("character varying(400)")
                         .HasColumnName("email");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
                         .HasColumnName("first_name");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
                         .HasColumnName("last_name");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)")
                         .HasColumnName("password_hash");
 
                     b.HasKey("Id")
@@ -1201,23 +432,22 @@ namespace StockFlow.Infrastructure.Migrations
                     b.ToTable("users", (string)null);
                 });
 
-            modelBuilder.Entity("StockFlow.Domain.Entities.Warehouse", b =>
+            modelBuilder.Entity("StockFlow.Domain.Entities.Warehouses.Warehouse", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
                     b.Property<string>("Location")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
                         .HasColumnName("location");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
                         .HasColumnName("name");
 
                     b.HasKey("Id")
@@ -1235,10 +465,11 @@ namespace StockFlow.Infrastructure.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("json")
                         .HasColumnName("content");
 
                     b.Property<string>("Error")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("error");
 
@@ -1263,14 +494,14 @@ namespace StockFlow.Infrastructure.Migrations
 
             modelBuilder.Entity("RoleUser", b =>
                 {
-                    b.HasOne("StockFlow.Domain.Entities.Role", null)
+                    b.HasOne("StockFlow.Domain.Entities.Users.Role", null)
                         .WithMany()
-                        .HasForeignKey("RoleId")
+                        .HasForeignKey("RolesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_role_user_roles_role_id");
+                        .HasConstraintName("fk_role_user_role_roles_id");
 
-                    b.HasOne("StockFlow.Domain.Entities.User", null)
+                    b.HasOne("StockFlow.Domain.Entities.Users.User", null)
                         .WithMany()
                         .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1278,66 +509,228 @@ namespace StockFlow.Infrastructure.Migrations
                         .HasConstraintName("fk_role_user_users_users_id");
                 });
 
-            modelBuilder.Entity("StockFlow.Domain.Entities.Order", b =>
+            modelBuilder.Entity("StockFlow.Domain.Entities.Orders.Order", b =>
                 {
-                    b.HasOne("StockFlow.Domain.Entities.Supplier", "Supplier")
+                    b.HasOne("StockFlow.Domain.Entities.Suppliers.Supplier", null)
                         .WithMany()
                         .HasForeignKey("SupplierId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_orders_suppliers_supplier_id");
 
-                    b.HasOne("StockFlow.Domain.Entities.Warehouse", "Warehouse")
+                    b.HasOne("StockFlow.Domain.Entities.Warehouses.Warehouse", null)
                         .WithMany()
                         .HasForeignKey("WarehouseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_orders_warehouses_warehouse_id");
-
-                    b.Navigation("Supplier");
-
-                    b.Navigation("Warehouse");
                 });
 
-            modelBuilder.Entity("StockFlow.Domain.Entities.OrderItem", b =>
+            modelBuilder.Entity("StockFlow.Domain.Entities.Orders.OrderItem", b =>
                 {
-                    b.HasOne("StockFlow.Domain.Entities.Order", null)
+                    b.HasOne("StockFlow.Domain.Entities.Orders.Order", null)
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderId")
                         .HasConstraintName("fk_order_items_orders_order_id");
 
-                    b.HasOne("StockFlow.Domain.Entities.Product", "Product")
+                    b.HasOne("StockFlow.Domain.Entities.Products.Product", null)
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_order_items_products_product_id");
 
-                    b.Navigation("Product");
+                    b.OwnsOne("StockFlow.Domain.Shared.Money", "UnitPrice", b1 =>
+                        {
+                            b1.Property<Guid>("OrderItemId")
+                                .HasColumnType("uuid")
+                                .HasColumnName("id");
+
+                            b1.Property<decimal>("Amount")
+                                .HasColumnType("numeric")
+                                .HasColumnName("unit_price_amount");
+
+                            b1.Property<string>("Currency")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("unit_price_currency");
+
+                            b1.HasKey("OrderItemId");
+
+                            b1.ToTable("order_items");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrderItemId")
+                                .HasConstraintName("fk_order_items_order_items_id");
+                        });
+
+                    b.Navigation("UnitPrice")
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("StockFlow.Domain.Entities.Product", b =>
+            modelBuilder.Entity("StockFlow.Domain.Entities.Products.Product", b =>
                 {
-                    b.HasOne("StockFlow.Domain.Entities.Category", "Category")
+                    b.HasOne("StockFlow.Domain.Entities.Categories.Category", null)
                         .WithMany()
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
                         .HasConstraintName("fk_products_categories_category_id");
 
-                    b.Navigation("Category");
+                    b.OwnsOne("StockFlow.Domain.Shared.Money", "Price", b1 =>
+                        {
+                            b1.Property<Guid>("ProductId")
+                                .HasColumnType("uuid")
+                                .HasColumnName("id");
+
+                            b1.Property<decimal>("Amount")
+                                .HasColumnType("numeric")
+                                .HasColumnName("price_amount");
+
+                            b1.Property<string>("Currency")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("price_currency");
+
+                            b1.HasKey("ProductId");
+
+                            b1.ToTable("products");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ProductId")
+                                .HasConstraintName("fk_products_products_id");
+                        });
+
+                    b.Navigation("Price")
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("StockFlow.Domain.Entities.RolePermission", b =>
+            modelBuilder.Entity("StockFlow.Domain.Entities.Transactions.Transaction", b =>
                 {
-                    b.HasOne("StockFlow.Domain.Entities.Permission", null)
+                    b.HasOne("StockFlow.Domain.Entities.Orders.Order", null)
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .HasConstraintName("fk_transactions_orders_order_id");
+
+                    b.HasOne("StockFlow.Domain.Entities.Products.Product", null)
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_transactions_products_product_id");
+
+                    b.HasOne("StockFlow.Domain.Entities.Transfers.Transfer", null)
+                        .WithMany("Transactions")
+                        .HasForeignKey("TransferId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_transactions_transfers_transfer_id");
+
+                    b.HasOne("StockFlow.Domain.Entities.Warehouses.Warehouse", null)
+                        .WithMany()
+                        .HasForeignKey("WarehouseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_transactions_warehouses_warehouse_id");
+
+                    b.OwnsOne("StockFlow.Domain.Shared.Money", "UnitCost", b1 =>
+                        {
+                            b1.Property<Guid>("TransactionId")
+                                .HasColumnType("uuid")
+                                .HasColumnName("id");
+
+                            b1.Property<decimal>("Amount")
+                                .HasColumnType("numeric")
+                                .HasColumnName("unit_cost_amount");
+
+                            b1.Property<string>("Currency")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("unit_cost_currency");
+
+                            b1.HasKey("TransactionId");
+
+                            b1.ToTable("transactions");
+
+                            b1.WithOwner()
+                                .HasForeignKey("TransactionId")
+                                .HasConstraintName("fk_transactions_transactions_id");
+                        });
+
+                    b.Navigation("UnitCost");
+                });
+
+            modelBuilder.Entity("StockFlow.Domain.Entities.TransferItems.TransferItem", b =>
+                {
+                    b.HasOne("StockFlow.Domain.Entities.Products.Product", null)
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_transfer_items_products_product_id");
+
+                    b.HasOne("StockFlow.Domain.Entities.Transfers.Transfer", null)
+                        .WithMany("Items")
+                        .HasForeignKey("TransferId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_transfer_items_transfers_transfer_id");
+                });
+
+            modelBuilder.Entity("StockFlow.Domain.Entities.Transfers.Transfer", b =>
+                {
+                    b.OwnsOne("StockFlow.Domain.Entities.Warehouses.WarehouseId", "DestinationWarehouseId", b1 =>
+                        {
+                            b1.Property<Guid>("TransferId")
+                                .HasColumnType("uuid")
+                                .HasColumnName("id");
+
+                            b1.Property<Guid>("Value")
+                                .HasColumnType("uuid")
+                                .HasColumnName("destination_warehouse_id_value");
+
+                            b1.HasKey("TransferId");
+
+                            b1.ToTable("transfers");
+
+                            b1.WithOwner()
+                                .HasForeignKey("TransferId")
+                                .HasConstraintName("fk_transfers_transfers_id");
+                        });
+
+                    b.OwnsOne("StockFlow.Domain.Entities.Warehouses.WarehouseId", "SourceWarehouseId", b1 =>
+                        {
+                            b1.Property<Guid>("TransferId")
+                                .HasColumnType("uuid")
+                                .HasColumnName("id");
+
+                            b1.Property<Guid>("Value")
+                                .HasColumnType("uuid")
+                                .HasColumnName("source_warehouse_id_value");
+
+                            b1.HasKey("TransferId");
+
+                            b1.ToTable("transfers");
+
+                            b1.WithOwner()
+                                .HasForeignKey("TransferId")
+                                .HasConstraintName("fk_transfers_transfers_id");
+                        });
+
+                    b.Navigation("DestinationWarehouseId")
+                        .IsRequired();
+
+                    b.Navigation("SourceWarehouseId")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("StockFlow.Domain.Entities.Users.RolePermission", b =>
+                {
+                    b.HasOne("StockFlow.Domain.Entities.Users.Permission", null)
                         .WithMany()
                         .HasForeignKey("PermissionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_role_permissions_permissions_permission_id");
 
-                    b.HasOne("StockFlow.Domain.Entities.Role", null)
+                    b.HasOne("StockFlow.Domain.Entities.Users.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1345,69 +738,12 @@ namespace StockFlow.Infrastructure.Migrations
                         .HasConstraintName("fk_role_permissions_roles_role_id");
                 });
 
-            modelBuilder.Entity("StockFlow.Domain.Entities.Transaction", b =>
-                {
-                    b.HasOne("StockFlow.Domain.Entities.Order", "Order")
-                        .WithMany()
-                        .HasForeignKey("OrderId")
-                        .HasConstraintName("fk_transactions_orders_order_id");
-
-                    b.HasOne("StockFlow.Domain.Entities.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_transactions_products_product_id");
-
-                    b.HasOne("StockFlow.Domain.Entities.Transfer", "Transfer")
-                        .WithMany("Transactions")
-                        .HasForeignKey("TransferId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_transactions_transfers_transfer_id");
-
-                    b.HasOne("StockFlow.Domain.Entities.Warehouse", "Warehouse")
-                        .WithMany()
-                        .HasForeignKey("WarehouseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_transactions_warehouses_warehouse_id");
-
-                    b.Navigation("Order");
-
-                    b.Navigation("Product");
-
-                    b.Navigation("Transfer");
-
-                    b.Navigation("Warehouse");
-                });
-
-            modelBuilder.Entity("StockFlow.Domain.Entities.TransferItem", b =>
-                {
-                    b.HasOne("StockFlow.Domain.Entities.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_transfer_items_products_product_id");
-
-                    b.HasOne("StockFlow.Domain.Entities.Transfer", "Transfer")
-                        .WithMany("Items")
-                        .HasForeignKey("TransferId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_transfer_items_transfers_transfer_id");
-
-                    b.Navigation("Product");
-
-                    b.Navigation("Transfer");
-                });
-
-            modelBuilder.Entity("StockFlow.Domain.Entities.Order", b =>
+            modelBuilder.Entity("StockFlow.Domain.Entities.Orders.Order", b =>
                 {
                     b.Navigation("OrderItems");
                 });
 
-            modelBuilder.Entity("StockFlow.Domain.Entities.Transfer", b =>
+            modelBuilder.Entity("StockFlow.Domain.Entities.Transfers.Transfer", b =>
                 {
                     b.Navigation("Items");
 

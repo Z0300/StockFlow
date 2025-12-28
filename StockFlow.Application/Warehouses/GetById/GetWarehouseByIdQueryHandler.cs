@@ -1,32 +1,38 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SharedKernel;
+﻿using System.Data;
+using Dapper;
+using Microsoft.EntityFrameworkCore;
+using StockFlow.Application.Abstractions.Authentication;
 using StockFlow.Application.Abstractions.Data;
 using StockFlow.Application.Abstractions.Messaging;
 using StockFlow.Application.Warehouses.Shared;
-using StockFlow.Domain.DomainErrors;
+using StockFlow.Domain.Entities.Abstractions;
 
 namespace StockFlow.Application.Warehouses.GetById;
 
-internal sealed class GetWarehouseByIdQueryHandler(IApplicationDbContext context)
+internal sealed class GetWarehouseByIdQueryHandler
     : IQueryHandler<GetWarehouseByIdQuery, WarehouseResponse>
 {
+    private readonly ISqlConnectionFactory _sqlConnectionFactory;
+
+
+    public GetWarehouseByIdQueryHandler(ISqlConnectionFactory sqlConnectionFactory, IUserContext userContext)
+    {
+        _sqlConnectionFactory = sqlConnectionFactory;
+    }
     public async Task<Result<WarehouseResponse>> Handle(GetWarehouseByIdQuery query, CancellationToken cancellationToken)
     {
-        WarehouseResponse? warehouse = await context.Warehouses
-            .AsNoTracking()
-            .Where(warehouse => warehouse.Id == query.WarehouseId)
-            .Select(w => new WarehouseResponse
-            {
-                Id = w.Id,
-                Name = w.Name,
-                Location = w.Location
-            })
-            .SingleOrDefaultAsync(cancellationToken);
+        using IDbConnection connection = _sqlConnectionFactory.CreateConnection();
 
-        if (warehouse is null)
-        {
-            return Result.Failure<WarehouseResponse>(WarehouseErrors.NotFound(query.WarehouseId));
-        }
+        const string sql = """
+                SELECT 
+                    id AS WarehouseId,
+                    name AS WarehouseName,
+                    location AS WarehouseLocation
+                FROM warehouses
+                WHERE id = @CategoryId
+                """;
+
+        WarehouseResponse warehouse = await connection.QueryFirstOrDefaultAsync<WarehouseResponse>(sql);
 
         return warehouse;
     }

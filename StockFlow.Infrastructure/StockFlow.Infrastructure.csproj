@@ -2,8 +2,6 @@
 
 	<ItemGroup>
 		<PackageReference Include="EFCore.NamingConventions" />
-		<PackageReference Include="MassTransit" />
-		<PackageReference Include="MassTransit.RabbitMQ" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" />
@@ -11,9 +9,11 @@
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" />
 		<PackageReference Include="Newtonsoft.Json" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
 		<PackageReference Include="Quartz.Extensions.Hosting" />
+		<PackageReference Include="StackExchange.Redis" />
 	</ItemGroup>
 
 	<ItemGroup>

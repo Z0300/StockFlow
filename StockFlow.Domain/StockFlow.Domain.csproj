@@ -1,7 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<ItemGroup>
-		<ProjectReference Include="..\SharedKernel\SharedKernel.csproj" />
+	  <PackageReference Include="MediatR" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Entities\Transactions\Events\" />
 	</ItemGroup>
 
 </Project>

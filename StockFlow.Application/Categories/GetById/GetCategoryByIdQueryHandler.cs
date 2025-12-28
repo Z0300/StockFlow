@@ -1,32 +1,38 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SharedKernel;
+﻿using System.Data;
+using Dapper;
+using Microsoft.EntityFrameworkCore;
+using StockFlow.Application.Abstractions.Authentication;
 using StockFlow.Application.Abstractions.Data;
 using StockFlow.Application.Abstractions.Messaging;
 using StockFlow.Application.Categories.Shared;
-using StockFlow.Domain.DomainErrors;
+using StockFlow.Domain.Entities.Abstractions;
 
 namespace StockFlow.Application.Categories.GetById;
 
-internal sealed class GetCategoryByIdQueryHandler(IApplicationDbContext context)
+internal sealed class GetCategoryByIdQueryHandler
     : IQueryHandler<GetCategoryByIdQuery, CategoryResponse>
 {
-    public async Task<Result<CategoryResponse>> Handle(GetCategoryByIdQuery query, CancellationToken cancellationToken)
-    {
-        CategoryResponse? category = await context.Categories
-             .AsNoTracking()
-             .Where(category => category.Id == query.Id)
-             .Select(category => new CategoryResponse
-             {
-                 Id = category.Id,
-                 Name = category.Name,
-                 Description = category.Description
-             })
-             .SingleOrDefaultAsync(cancellationToken);
+    private readonly ISqlConnectionFactory _sqlConnectionFactory;
 
-        if (category is null)
-        {
-            return Result.Failure<CategoryResponse>(CategoryErrors.NotFound(query.Id));
-        }
+
+    public GetCategoryByIdQueryHandler(ISqlConnectionFactory sqlConnectionFactory, IUserContext userContext)
+    {
+        _sqlConnectionFactory = sqlConnectionFactory;
+    }
+    public async Task<Result<CategoryResponse>> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
+    {
+        using IDbConnection connection = _sqlConnectionFactory.CreateConnection();
+
+        const string sql = """
+                SELECT 
+                    id AS CategoryId,
+                    name AS CategoryName,
+                    description AS CategoryDescription
+                FROM categories
+                WHERE id = @CategoryId
+                """;
+
+        CategoryResponse category = await connection.QueryFirstOrDefaultAsync<CategoryResponse>(sql);
 
         return category;
     }

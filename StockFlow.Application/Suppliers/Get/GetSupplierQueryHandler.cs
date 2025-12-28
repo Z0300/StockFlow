@@ -1,26 +1,35 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SharedKernel;
+﻿using System.Data;
+using Dapper;
+using Microsoft.EntityFrameworkCore;
 using StockFlow.Application.Abstractions.Data;
 using StockFlow.Application.Abstractions.Messaging;
 using StockFlow.Application.Suppliers.Shared;
+using StockFlow.Domain.Entities.Abstractions;
 
 namespace StockFlow.Application.Suppliers.Get;
 
-internal sealed class GetSupplierQueryHandler(IApplicationDbContext context)
-    : IQueryHandler<GetSupplierQuery, List<SupplierResponse>>
+internal sealed class GetSupplierQueryHandler
+    : IQueryHandler<GetSupplierQuery, IReadOnlyList<SupplierResponse>>
 {
-    public async Task<Result<List<SupplierResponse>>> Handle(GetSupplierQuery query, CancellationToken cancellationToken)
+    private readonly ISqlConnectionFactory _connectionFactory;
+    public GetSupplierQueryHandler(ISqlConnectionFactory connectionFactory)
     {
-        List<SupplierResponse> suppliers = await context.Suppliers
-            .AsNoTracking()
-            .Select(supplier => new SupplierResponse
-            {
-                Id = supplier.Id,
-                Name = supplier.Name,
-                ContactInfo = supplier.ContactInfo
-            })
-            .ToListAsync(cancellationToken);
+        _connectionFactory = connectionFactory;
+    }
+    public async Task<Result<IReadOnlyList<SupplierResponse>>> Handle(GetSupplierQuery query, CancellationToken cancellationToken)
+    {
+        using IDbConnection connection = _connectionFactory.CreateConnection();
 
-        return suppliers;
+        const string sql = """
+             SELECT 
+                id AS SupplierId,
+                name AS SupplierName,
+                contact_info AS SupplierContactInfo
+            FROM suppliers
+            """;
+
+        IEnumerable<SupplierResponse> suppliers = await connection.QueryAsync<SupplierResponse>(sql);
+
+        return suppliers.ToList();
     }
 }

@@ -1,69 +1,74 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SharedKernel;
-using StockFlow.Application.Abstractions.Data;
-using StockFlow.Domain.Entities;
-using StockFlow.Infrastructure.DomainEvents;
+﻿
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using StockFlow.Application.Abstractions.Clock;
+using StockFlow.Application.Exceptions;
+using StockFlow.Domain.Entities.Abstractions;
+using StockFlow.Domain.Entities.Warehouses;
+using StockFlow.Infrastructure.Outbox;
 
 namespace StockFlow.Infrastructure.Database;
 
-public sealed class ApplicationDbContext(
-    DbContextOptions<ApplicationDbContext> options,
-    IDomainEventsDispatcher domainEventsDispatcher)
-    : DbContext(options), IApplicationDbContext
+public sealed class ApplicationDbContext : DbContext, IUnitOfWork
 {
-    public DbSet<User> Users { get; set; }
-    public DbSet<Category> Categories { get; set; }
-    public DbSet<Transaction> Transactions { get; set; }
-    public DbSet<OrderItem> OrderItems { get; set; }
-    public DbSet<Order> Orders { get; set; }
-    public DbSet<Product> Products { get; set; }
-    public DbSet<Supplier> Suppliers { get; set; }
-    public DbSet<Warehouse> Warehouses { get; set; }
-    public DbSet<Role> Roles { get; set; }
-    public DbSet<Permission> Permissions { get; set; }
-    public DbSet<RolePermission> RolePermissions { get; set; }
-    public DbSet<Transfer> Transfers { get; set; }
-    public DbSet<TransferItem> TransferItems { get; set; }
+    private static readonly JsonSerializerSettings JsonSerializerSettings = new()
+    {
+        TypeNameHandling = TypeNameHandling.All
+    };
+
+    private readonly IDateTimeProvider _dateTimeProvider;
+
+    public ApplicationDbContext(DbContextOptions options,
+
+        IDateTimeProvider dateTimeProvider) : base(options)
+    {
+        _dateTimeProvider = dateTimeProvider;
+    }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+
+        modelBuilder.Owned<WarehouseId>();
+
+        base.OnModelCreating(modelBuilder);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        // When should you publish domain events?
-        //
-        // 1. BEFORE calling SaveChangesAsync
-        //     - domain events are part of the same transaction
-        //     - immediate consistency
-        // 2. AFTER calling SaveChangesAsync
-        //     - domain events are a separate transaction
-        //     - eventual consistency
-        //     - handlers can fail
+        try
+        {
+            AddDomainEventsAsOutboxMessages();
 
-        int result = await base.SaveChangesAsync(cancellationToken);
+            int result = await base.SaveChangesAsync(cancellationToken);
 
-        await PublishDomainEventsAsync();
-
-        return result;
+            return result;
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            throw new ConcurrencyException("Concurrency exception ocurred.", ex);
+        }
     }
 
-    private async Task PublishDomainEventsAsync()
+    private void AddDomainEventsAsOutboxMessages()
     {
-        var domainEvents = ChangeTracker
-            .Entries<Entity>()
+        var outboxMessages = ChangeTracker
+            .Entries<IEntity>()
             .Select(entry => entry.Entity)
             .SelectMany(entity =>
             {
-                List<IDomainEvent> domainEvents = entity.DomainEvents;
+                IReadOnlyList<IDomainEvent> domainEvents = entity.GetDomainEvents();
 
                 entity.ClearDomainEvents();
 
                 return domainEvents;
             })
+            .Select(domainEvent => new OutboxMessage(
+                Guid.NewGuid(),
+                _dateTimeProvider.UtcNow,
+                domainEvent.GetType().Name,
+                JsonConvert.SerializeObject(domainEvent, JsonSerializerSettings)))
             .ToList();
 
-
-        await domainEventsDispatcher.DispatchAsync(domainEvents);
+        AddRange(outboxMessages);
     }
 }

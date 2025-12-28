@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using StockFlow.Domain.Entities;
+using StockFlow.Domain.Entities.Users;
 
 namespace StockFlow.Infrastructure.Configurations;
 
@@ -8,16 +8,10 @@ internal sealed class PermissionConfiguration : IEntityTypeConfiguration<Permiss
 {
     public void Configure(EntityTypeBuilder<Permission> builder)
     {
+        builder.ToTable("permissions");
+
         builder.HasKey(p => p.Id);
 
-        IEnumerable<Permission> permissions = Enum
-            .GetValues<Domain.Enums.Permission>()
-            .Select(p => new Permission
-            {
-                Id = (int)p,
-                Name = p.ToString()
-            });
-
-        builder.HasData(permissions);
+        builder.HasData(Permission.Admin);
     }
 }

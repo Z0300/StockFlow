@@ -1,39 +1,40 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SharedKernel;
-using StockFlow.Application.Abstractions.Data;
+using StockFlow.Application.Abstractions.Clock;
 using StockFlow.Application.Abstractions.Messaging;
-using StockFlow.Domain.DomainErrors;
-using StockFlow.Domain.DomainEvents;
-using StockFlow.Domain.Entities;
-using StockFlow.Domain.Enums;
+using StockFlow.Domain.Entities.Abstractions;
+using StockFlow.Domain.Entities.Transfers;
+using StockFlow.Domain.Entities.Transfers.Enums;
 
 namespace StockFlow.Application.Transactions.DispatchTransfer;
 
-internal sealed class DispatchTransferCommandHandler(IApplicationDbContext context,
-    IDateTimeProvider dateTimeProvider)
+internal sealed class DispatchTransferCommandHandler
     : ICommandHandler<DispatchTransferCommand>
 {
-    public async Task<Result> Handle(DispatchTransferCommand command, CancellationToken cancellationToken)
+    private readonly ITransferRepository _transferRepository;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IDateTimeProvider _dateTimeProvider;
+
+    public DispatchTransferCommandHandler(
+        ITransferRepository transferRepository,
+        IUnitOfWork unitOfWork,
+        IDateTimeProvider dateTimeProvider)
     {
-        Transfer? transfer = await context.Transfers
-            .SingleOrDefaultAsync(t => t.Id == command.TransferId, cancellationToken);
+        _transferRepository = transferRepository;
+        _unitOfWork = unitOfWork;
+        _dateTimeProvider = dateTimeProvider;
+    }
+    public async Task<Result> Handle(DispatchTransferCommand request, CancellationToken cancellationToken)
+    {
+        Transfer? transfer = await _transferRepository.GetByIdAsync(new TransferId(request.TransferId), cancellationToken);
 
         if (transfer is null)
         {
-            return Result.Failure(TransferErrors.TransferNotFound(command.TransferId));
+            return Result.Failure(TransferErrors.NotFound);
         }
 
-        if (transfer.Status != TransferStatus.Draft)
-        {
-            return Result.Failure(TransferErrors.TransferAlreadyDispatched(command.TransferId));
-        }
-
-        transfer.Status = TransferStatus.InTransit;
-        transfer.DispatchAt = dateTimeProvider.UtcNow;
-
-        transfer.Raise(new DispatchTransferDomainEvent(transfer.Id));
-
-        await context.SaveChangesAsync(cancellationToken);
+        transfer.Dispatch(_dateTimeProvider.UtcNow);
+       
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success();
     }
