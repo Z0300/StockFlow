@@ -1,4 +1,5 @@
-﻿using StockFlow.Domain.Entities.Abstractions;
+﻿using System.Security.Cryptography;
+using StockFlow.Domain.Entities.Abstractions;
 
 namespace StockFlow.Domain.Entities.Categories;
 
@@ -24,10 +25,9 @@ public class Category : Entity<CategoryId>
     public static Category Create(string name, string description)
         => new(CategoryId.New(), name, description);
 
-    public void ChangeName(string name)
-        => Name = name;
-
-    public void ChangeDescription(string description)
-        => Description = description;
-
+    public void Update(string name, string description)
+    {
+        Name = name;
+        Description = description;
+    }
 }
