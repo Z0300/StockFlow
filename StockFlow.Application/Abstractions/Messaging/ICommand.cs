@@ -1,5 +1,15 @@
-﻿namespace StockFlow.Application.Abstractions.Messaging;
+﻿using MediatR;
+using StockFlow.Domain.Entities.Abstractions;
 
-public interface ICommand;
+namespace StockFlow.Application.Abstractions.Messaging;
 
-public interface ICommand<TResponse>;
+public interface ICommand : IRequest<Result>, IBaseCommand
+{
+}
+
+public interface ICommand<TResponse> : IRequest<Result<TResponse>>, IBaseCommand
+{
+}
+public interface IBaseCommand
+{
+}

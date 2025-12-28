@@ -1,34 +1,52 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SharedKernel;
-using StockFlow.Application.Abstractions.Data;
+﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using StockFlow.Application.Abstractions.Messaging;
-using StockFlow.Domain.DomainErrors;
+using StockFlow.Application.Exceptions;
 using StockFlow.Domain.Entities;
+using StockFlow.Domain.Entities.Abstractions;
+using StockFlow.Domain.Entities.Categories;
+using StockFlow.Domain.Entities.Products;
+using StockFlow.Domain.Shared;
 
 namespace StockFlow.Application.Products.Create;
 
-internal sealed class CreateProductCommandHandler(IApplicationDbContext context)
+internal sealed class CreateProductCommandHandler
     : ICommandHandler<CreateProductCommand, Guid>
 {
-    public async Task<Result<Guid>> Handle(CreateProductCommand command, CancellationToken cancellationToken)
+    private readonly IProductRepository _productRepository;
+    private readonly IUnitOfWork _unitOfWork;
+    public CreateProductCommandHandler(
+        IProductRepository productRepository,
+        IUnitOfWork unitOfWork)
     {
-        if (await context.Products.AnyAsync(p => p.Name == command.Name, cancellationToken))
+        _productRepository = productRepository;
+        _unitOfWork = unitOfWork;
+    }
+    public async Task<Result<Guid>> Handle(CreateProductCommand request, CancellationToken cancellationToken)
+    {
+        if (await _productRepository.IsNameUnique(request.Name, cancellationToken))
         {
             return Result.Failure<Guid>(ProductErrors.NameNotUnique);
         }
 
-        var product = new Product
+        try
         {
-            Id = Guid.NewGuid(),
-            Name = command.Name,
-            Sku = command.Sku,
-            Price = command.Price,
-            CategoryId = command.CategoryId
-        };
+            var product = Product.Create(
+                request.Name,
+                request.Sku,
+                new Money(request.Price, Currency.Php),
+                new CategoryId(request.CategoryId)
+            );
 
-        context.Products.Add(product);
-        await context.SaveChangesAsync(cancellationToken);
+            _productRepository.Add(product);
 
-        return product.Id;
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            return product.Id.Value;
+        }
+        catch (ConcurrencyException)
+        {
+            return Result.Failure<Guid>(ProductErrors.NameNotUnique);
+        }
     }
 }

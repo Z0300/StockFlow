@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using StockFlow.Domain.Entities;
+using StockFlow.Domain.Entities.Orders;
+using StockFlow.Domain.Entities.Products;
+using StockFlow.Domain.Shared;
 
 namespace StockFlow.Infrastructure.Configurations;
 
@@ -8,12 +10,23 @@ internal sealed class OrderItemsConfiguration : IEntityTypeConfiguration<OrderIt
 {
     public void Configure(EntityTypeBuilder<OrderItem> builder)
     {
+        builder.ToTable("order_items");
+
         builder.HasKey(u => u.Id);
 
-        builder.HasOne(oi => oi.Product).WithMany().HasForeignKey(oi => oi.ProductId);
+        builder.Property(x => x.Id)
+           .HasConversion(orderItemId => orderItemId.Value, value => new OrderItemId(value));
+
+        builder.HasOne<Product>()
+            .WithMany()
+            .HasForeignKey(oi => oi.ProductId);
 
         builder.Property(u => u.Quantity).IsRequired();
 
-        builder.Property(u => u.UnitPrice).HasPrecision(18, 2).IsRequired();
+        builder.OwnsOne(u => u.UnitPrice, priceBuilder =>
+        {
+            priceBuilder.Property(money => money.Currency)
+               .HasConversion(currency => currency.Code, code => Currency.FromCode(code));
+        });
     }
 }

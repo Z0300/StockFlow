@@ -1,26 +1,35 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SharedKernel;
+﻿using System.Data;
+using Dapper;
+using Microsoft.EntityFrameworkCore;
 using StockFlow.Application.Abstractions.Data;
 using StockFlow.Application.Abstractions.Messaging;
 using StockFlow.Application.Warehouses.Shared;
+using StockFlow.Domain.Entities.Abstractions;
 
 namespace StockFlow.Application.Warehouses.Get;
 
-internal sealed class GetWarehouseQueryHandler(IApplicationDbContext context)
-    : IQueryHandler<GetWarehouseQuery, List<WarehouseResponse>>
+internal sealed class GetWarehouseQueryHandler
+    : IQueryHandler<GetWarehouseQuery, IReadOnlyList<WarehouseResponse>>
 {
-    public async Task<Result<List<WarehouseResponse>>> Handle(GetWarehouseQuery query, CancellationToken cancellationToken)
+    private readonly ISqlConnectionFactory _connectionFactory;
+    public GetWarehouseQueryHandler(ISqlConnectionFactory connectionFactory)
     {
-        List<WarehouseResponse> warehouses = await context.Warehouses
-            .AsNoTracking()
-            .Select(w => new WarehouseResponse
-            {
-                Id = w.Id,
-                Name = w.Name,
-                Location = w.Location
-            })
-            .ToListAsync(cancellationToken);
+        _connectionFactory = connectionFactory;
+    }
+    public async Task<Result<IReadOnlyList<WarehouseResponse>>> Handle(GetWarehouseQuery query, CancellationToken cancellationToken)
+    {
+        using IDbConnection connection = _connectionFactory.CreateConnection();
 
-        return warehouses;
+        const string sql = """
+                SELECT 
+                    id AS WarehouseId,
+                    name AS WarehouseName,
+                    location AS WarehouseLocation
+                FROM warehouses
+                """;
+
+        IEnumerable<WarehouseResponse> warehouses = await connection.QueryAsync<WarehouseResponse>(sql);
+
+        return warehouses.ToList();
     }
 }

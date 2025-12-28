@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using StockFlow.Domain.Enums;
+using StockFlow.Domain.Entities.Transactions.Enums;
 
 namespace StockFlow.Application.Transactions.Create;
 

@@ -1,0 +1,83 @@
+﻿using System.Threading;
+using MediatR;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using StockFlow.Api.Endpoints.Categories;
+using StockFlow.Application.Categories.Create;
+using StockFlow.Application.Categories.Get;
+using StockFlow.Application.Categories.Shared;
+using StockFlow.Application.Categories.Update;
+using StockFlow.Application.Orders.Cancel;
+using StockFlow.Application.Orders.Create;
+using StockFlow.Application.Orders.Get;
+using StockFlow.Application.Orders.GetById;
+using StockFlow.Domain.Entities.Abstractions;
+
+namespace StockFlow.Api.Endpoints.Orders;
+
+[Route("api/[controller]")]
+[ApiController]
+public class OrdersController : ControllerBase
+{
+    private readonly ISender _sender;
+
+    public OrdersController(ISender sender)
+    {
+        _sender = sender;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetOrders(CancellationToken cancellationToken)
+    {
+        var query = new GetOrderQuery();
+
+        Result<IReadOnlyCollection<OrdersResponse>> result = await _sender.Send(query, cancellationToken);
+
+        return Ok(result.Value);
+    }
+
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetOrder(Guid id, CancellationToken cancellationToken)
+    {
+        var query = new GetOrderByIdQuery(id);
+        Result<OrderResponse> result = await _sender.Send(query, cancellationToken);
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
+        return Ok(result.Value);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request, CancellationToken cancellationToken)
+    {
+        var command = new CreateOrderCommand(
+            request.WarehouseId,
+            request.SupplierId,
+            request.Items);
+
+        Result<Guid> result = await _sender.Send(command, cancellationToken);
+
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
+        return CreatedAtAction(nameof(GetOrder), new { id = result.Value }, result.Value);
+    }
+
+    [HttpPut("{orderId:guid}")]
+    public async Task<IActionResult> Cancel(Guid orderId, CancellationToken cancellationToken)
+    {
+        var command = new CancelOrderCommand(orderId);
+
+        Result result = await _sender.Send(command, cancellationToken);
+
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
+
+        return NoContent();
+    }
+
+}

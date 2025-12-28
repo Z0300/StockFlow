@@ -1,26 +1,34 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SharedKernel;
+﻿using System.Data;
+using Dapper;
+using Microsoft.EntityFrameworkCore;
 using StockFlow.Application.Abstractions.Data;
 using StockFlow.Application.Abstractions.Messaging;
 using StockFlow.Application.Categories.Shared;
+using StockFlow.Domain.Entities.Abstractions;
 
 namespace StockFlow.Application.Categories.Get;
 
-internal sealed class GetCategoryQueryHandler(IApplicationDbContext context)
-    : IQueryHandler<GetCategoryQuery, List<CategoryResponse>>
+internal sealed class GetCategoryQueryHandler : IQueryHandler<GetCategoryQuery, IReadOnlyList<CategoryResponse>>
 {
-    public async Task<Result<List<CategoryResponse>>> Handle(GetCategoryQuery query, CancellationToken cancellationToken)
+    private readonly ISqlConnectionFactory _connectionFactory;
+    public GetCategoryQueryHandler(ISqlConnectionFactory connectionFactory)
     {
-        List<CategoryResponse> categories = await context.Categories
-            .AsNoTracking()
-            .Select(category => new CategoryResponse
-            {
-                Id = category.Id,
-                Name = category.Name,
-                Description = category.Description
-            })
-            .ToListAsync(cancellationToken);
+        _connectionFactory = connectionFactory;
+    }
+    public async Task<Result<IReadOnlyList<CategoryResponse>>> Handle(GetCategoryQuery request, CancellationToken cancellationToken)
+    {
+        using IDbConnection connection = _connectionFactory.CreateConnection();
 
-        return categories;
+        const string sql = """
+                SELECT 
+                    id AS CategoryId,
+                    name AS CategoryName,
+                    description AS CategoryDescription
+                FROM categories
+                """;
+
+        IEnumerable<CategoryResponse> categories = await connection.QueryAsync<CategoryResponse>(sql);
+
+        return categories.ToList();
     }
 }

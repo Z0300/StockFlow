@@ -1,36 +1,47 @@
-﻿using SharedKernel;
-using StockFlow.Application.Abstractions.Data;
+﻿using StockFlow.Application.Abstractions.Clock;
 using StockFlow.Application.Abstractions.Messaging;
-using StockFlow.Domain.Entities;
-using StockFlow.Domain.Enums;
+using StockFlow.Domain.Entities.Abstractions;
+using StockFlow.Domain.Entities.Orders;
+using StockFlow.Domain.Entities.Orders.Enums;
+using StockFlow.Domain.Entities.Products;
+using StockFlow.Domain.Entities.Suppliers;
+using StockFlow.Domain.Entities.Warehouses;
+using StockFlow.Domain.Shared;
 
 namespace StockFlow.Application.Orders.Create;
 
-internal sealed class CreateOrderCommandHandler(IApplicationDbContext context)
+internal sealed class CreateOrderCommandHandler
     : ICommandHandler<CreateOrderCommand, Guid>
 {
+    private readonly IOrderRepository _orderRepository;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IDateTimeProvider _dateTimeProvider;
+
+    public CreateOrderCommandHandler(
+        IOrderRepository orderRepository, 
+        IUnitOfWork unitOfWork,
+        IDateTimeProvider dateTimeProvider)
+    {
+        _orderRepository = orderRepository;
+        _unitOfWork = unitOfWork;
+        _dateTimeProvider = dateTimeProvider;
+    }
     public async Task<Result<Guid>> Handle(CreateOrderCommand command, CancellationToken cancellationToken)
     {
-        var order = new Order
-        {
-            Id = Guid.NewGuid(),
-            WarehouseId = command.WarehouseId,
-            SupplierId = command.SupplierId,
-            OrderStatus = OrderStatus.Pending,
-            CreatedAt = DateTime.UtcNow,
-            OrderItems = [.. command.Items
-                .Select(item => new OrderItem
-                {
-                    Id = Guid.NewGuid(),
-                    ProductId = item.ProductId,
-                    Quantity = item.Quantity,
-                    UnitPrice = item.UnitPrice
-                })]
-        };
+        var order = Order.Create(
+               warehouseId: new WarehouseId(command.WarehouseId),
+               supplierId: new SupplierId(command.SupplierId),
+               orderStatus: OrderStatus.Pending,
+                createdAt: _dateTimeProvider.UtcNow,
+               items: [.. command.Items
+                   .Select(item => OrderItem.Create(
+                       productId: new ProductId(item.ProductId),
+                       quantity: item.Quantity,
+                       unitPrice: new Money(item.UnitPrice, Currency.Php)))]);
 
-        context.Orders.Add(order);
-        await context.SaveChangesAsync(cancellationToken);
+        _orderRepository.Add(order);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return order.Id;
+        return order.Id.Value;
     }
 }

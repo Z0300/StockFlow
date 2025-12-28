@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -8,17 +7,25 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Quartz;
-using SharedKernel;
 using StockFlow.Application.Abstractions.Authentication;
+using StockFlow.Application.Abstractions.Caching;
+using StockFlow.Application.Abstractions.Clock;
 using StockFlow.Application.Abstractions.Data;
-using StockFlow.Application.Abstractions.Messaging;
+using StockFlow.Domain.Entities.Abstractions;
+using StockFlow.Domain.Entities.Categories;
+using StockFlow.Domain.Entities.Orders;
+using StockFlow.Domain.Entities.Products;
+using StockFlow.Domain.Entities.Suppliers;
+using StockFlow.Domain.Entities.Transactions;
+using StockFlow.Domain.Entities.Transfers;
+using StockFlow.Domain.Entities.Users;
+using StockFlow.Domain.Entities.Warehouses;
 using StockFlow.Infrastructure.Authentication;
 using StockFlow.Infrastructure.Authorization;
-using StockFlow.Infrastructure.BackgroundJobs;
+using StockFlow.Infrastructure.Caching;
 using StockFlow.Infrastructure.Database;
-using StockFlow.Infrastructure.DomainEvents;
-using StockFlow.Infrastructure.Interceptors;
-using StockFlow.Infrastructure.Messaging;
+using StockFlow.Infrastructure.Outbox;
+using StockFlow.Infrastructure.Repositories;
 using StockFlow.Infrastructure.Time;
 
 namespace StockFlow.Infrastructure;
@@ -32,67 +39,39 @@ public static class DependencyInjection
                 .AddServices(configuration)
                 .AddDatabase(configuration)
                 .AddAuthenticationInternal(configuration)
-                .AddAuthorizationInternal();
+                .AddAuthorizationInternal()
+                .AddBackgroundJobs(configuration)
+                .AddCaching(configuration);
 
         private IServiceCollection AddServices(IConfiguration configuration)
         {
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+          
+            return services;
+        }
 
-            services.AddTransient<IDomainEventsDispatcher, DomainEventsDispatcher>();
+        private IServiceCollection AddBackgroundJobs(IConfiguration configuration)
+        {
+            services.Configure<OutboxOptions>(configuration.GetSection("Outbox"));
 
-            // Interceptors
-
-            services.AddScoped<OutboxSaveChangesInterceptor>();
-
-            services.AddDbContext<ApplicationDbContext>((serviceProvider, optionsBuilder) =>
+            services.AddQuartz(configurator =>
             {
-                OutboxSaveChangesInterceptor interceptor = serviceProvider.GetRequiredService<OutboxSaveChangesInterceptor>();
-                optionsBuilder.AddInterceptors(interceptor);
+                var schedulerId = Guid.NewGuid();
+                configurator.SchedulerId = $"default-id-{schedulerId}";
+                configurator.SchedulerName = $"default-name-{schedulerId}";
             });
 
-            // Background Jobs
+            services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
 
-            services.AddScoped<IJob, ProcessOutboxMessagesJob>();
-            services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
-
-            services.AddMassTransit(x =>
-            {
-                string? rabbitMqHost = configuration["RabbitMq:rabbitmq"];
-                string? rabbitMqUsername = configuration["RabbitMq:guest"];
-                string? rabbitMqPassword = configuration["RabbitMq:guest"];
-
-                x.UsingRabbitMq((context, cfg) =>
-                {
-                    cfg.Host(rabbitMqHost, "/", h =>
-                    {
-                        h.Username(rabbitMqUsername!);
-                        h.Password(rabbitMqPassword!);
-                    });
-                });
-            });
-
-            // Quartz Configuration
-
-            services.AddQuartz(config =>
-            {
-                var jobKey = new JobKey(nameof(ProcessOutboxMessagesJob));
-
-                config
-                    .AddJob<ProcessOutboxMessagesJob>(j => j.WithIdentity(jobKey))
-                    .AddTrigger(trigger => trigger.ForJob(jobKey)
-                        .WithSimpleSchedule(schedule =>
-                            schedule.WithIntervalInSeconds(10)
-                        .RepeatForever()));
-            });
-
-            services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+            services.ConfigureOptions<ProcessOutboxMessageJobSetup>();
 
             return services;
         }
 
         private IServiceCollection AddDatabase(IConfiguration configuration)
         {
-            string? connectionString = configuration.GetConnectionString("Database");
+            string? connectionString = configuration.GetConnectionString("Database") ??
+                 throw new ArgumentNullException(nameof(configuration));
 
             services.AddDbContext<ApplicationDbContext>(
                 options => options
@@ -100,7 +79,33 @@ public static class DependencyInjection
                         npgsqlOptions.MigrationsHistoryTable(HistoryRepository.DefaultTableName))
                     .UseSnakeCaseNamingConvention());
 
-            services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
+            services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
+
+            services.AddSingleton<ISqlConnectionFactory>(_ => new SqlConnectionFactory(connectionString));
+
+            #region Repositories
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<IWarehouseRepository, WarehouseRepository>();
+            services.AddScoped<ISupplierRepository, SupplierRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<ITransferRepository, TransferRepository>();
+            services.AddScoped<ITransactionRepository, TransactionRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            #endregion
+
+
+            return services;
+        }
+
+        private IServiceCollection AddCaching(IConfiguration configuration)
+        {
+            string connectionString = configuration.GetConnectionString("Cache") ??
+                                    throw new ArgumentNullException(nameof(configuration));
+
+            services.AddStackExchangeRedisCache(options => options.Configuration = connectionString);
+
+            services.AddSingleton<ICacheService, CacheService>();
 
             return services;
         }

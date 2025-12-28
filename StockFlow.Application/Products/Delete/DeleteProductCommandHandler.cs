@@ -1,27 +1,36 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SharedKernel;
-using StockFlow.Application.Abstractions.Data;
+﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using StockFlow.Application.Abstractions.Messaging;
-using StockFlow.Domain.DomainErrors;
-using StockFlow.Domain.Entities;
+using StockFlow.Domain.Entities.Abstractions;
+using StockFlow.Domain.Entities.Categories;
+using StockFlow.Domain.Entities.Products;
 
 namespace StockFlow.Application.Products.Delete;
 
-internal sealed class DeleteProductCommandHandler(IApplicationDbContext context)
+internal sealed class DeleteProductCommandHandler
     : ICommandHandler<DeleteProductCommand>
 {
-    public async Task<Result> Handle(DeleteProductCommand command, CancellationToken cancellationToken)
+    private readonly IProductRepository _productRepository;
+    private readonly IUnitOfWork _unitOfWork;
+    public DeleteProductCommandHandler(
+        IProductRepository productRepository,
+        IUnitOfWork unitOfWork)
     {
-        Product? product = await context.Products
-            .SingleOrDefaultAsync(p => p.Id == command.ProductId, cancellationToken);
+        _productRepository = productRepository;
+        _unitOfWork = unitOfWork;
+    }
+    public async Task<Result> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
+    {
+        Product? product = await _productRepository.GetByIdAsync(new ProductId(request.ProductId), cancellationToken);
 
         if (product is null)
         {
-            return Result.Failure(ProductErrors.NotFound(command.ProductId));
+            return Result.Failure(ProductErrors.NotFound);
         }
 
-        context.Products.Remove(product);
-        await context.SaveChangesAsync(cancellationToken);
+        _productRepository.Remove(product);
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success();
     }

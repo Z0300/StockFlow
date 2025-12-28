@@ -1,39 +1,42 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SharedKernel;
 using StockFlow.Application.Abstractions.Authentication;
-using StockFlow.Application.Abstractions.Data;
 using StockFlow.Application.Abstractions.Messaging;
-using StockFlow.Domain.DomainErrors;
-using StockFlow.Domain.DomainEvents;
 using StockFlow.Domain.Entities;
+using StockFlow.Domain.Entities.Abstractions;
+using StockFlow.Domain.Entities.Users;
+using StockFlow.Domain.Entities.Users.ValueObjects;
 
 namespace StockFlow.Application.Users.Register;
 
-internal sealed class RegisterUserCommandHandler(IApplicationDbContext context, IPasswordHasher passwordHasher)
+internal sealed class RegisterUserCommandHandler
     : ICommandHandler<RegisterUserCommand, Guid>
 {
+    private readonly IPasswordHasher _passwordHasher;
+    private readonly IUserRepository _userRepository;
+    private readonly IUnitOfWork _unitOfWork;
+
+    public RegisterUserCommandHandler(
+        IPasswordHasher passwordHasher,
+        IUserRepository userRepository,
+        IUnitOfWork unitOfWork)
+    {
+        _passwordHasher = passwordHasher;
+        _userRepository = userRepository;
+        _unitOfWork = unitOfWork;
+    }
     public async Task<Result<Guid>> Handle(RegisterUserCommand command, CancellationToken cancellationToken)
     {
-        if (await context.Users.AnyAsync(u => u.Email == command.Email, cancellationToken))
-        {
-            return Result.Failure<Guid>(UserErrors.EmailNotUnique);
-        }
+ 
+        var user = User.Create(
+            command.FirstName,
+            command.LastName,
+           new Email(command.Email),
+            _passwordHasher.Hash(command.Password));
 
-        var user = new User
-        {
-            Id = Guid.NewGuid(),
-            Email = command.Email,
-            FirstName = command.FirstName,
-            LastName = command.LastName,
-            PasswordHash = passwordHasher.Hash(command.Password)
-        };
+        _userRepository.Add(user);
 
-        user.Raise(new UserRegisteredDomainEvent(user.Id));
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        context.Users.Add(user);
-
-        await context.SaveChangesAsync(cancellationToken);
-
-        return user.Id;
+        return user.Id.Value;
     }
 }

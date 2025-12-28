@@ -1,6 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using StockFlow.Domain.Entities;
+using StockFlow.Domain.Entities.Orders;
+using StockFlow.Domain.Entities.Products;
+using StockFlow.Domain.Entities.Transactions;
+using StockFlow.Domain.Entities.Transfers;
+using StockFlow.Domain.Entities.Warehouses;
+using StockFlow.Domain.Shared;
 
 namespace StockFlow.Infrastructure.Configurations;
 
@@ -8,45 +13,44 @@ internal sealed class TransactionConfiguration : IEntityTypeConfiguration<Transa
 {
     public void Configure(EntityTypeBuilder<Transaction> builder)
     {
+        builder.ToTable("transactions");
+
         builder.HasKey(it => it.Id);
 
-        builder.Property(x => x.TransactionType)
-               .HasConversion<int>()
-               .IsRequired();
+        builder.Property(x => x.Id)
+           .HasConversion(transactionId => transactionId.Value, value => new TransactionId(value));
 
         builder.Property(x => x.QuantityChange)
                .IsRequired();
 
-        builder.Property(x => x.OperationId)
-               .IsRequired();
-
-        builder.Property(it => it.UnitCost)
-               .HasPrecision(18, 4);
+        builder.OwnsOne(u => u.UnitCost, priceBuilder =>
+        {
+            priceBuilder.Property(money => money.Currency)
+               .HasConversion(currency => currency.Code, code => Currency.FromCode(code));
+        });
 
         builder.Property(it => it.Reason)
                .HasMaxLength(512);
 
-        builder.HasOne(it => it.Order)
+        builder.HasOne<Order>()
                .WithMany()
                .HasForeignKey(it => it.OrderId);
 
-        builder.HasOne(it => it.Product)
+        builder.HasOne<Product>()
                .WithMany()
-               .HasForeignKey(it => it.ProductId)
-               .IsRequired();
+               .HasForeignKey(it => it.ProductId);
 
-        builder.HasOne(it => it.Warehouse)
+        builder.HasOne<Warehouse>()
                .WithMany()
                .HasForeignKey(it => it.WarehouseId)
                .IsRequired();
 
-        builder.HasOne(t => t.Transfer)
+        builder.HasOne<Transfer>()
                .WithMany(tr => tr.Transactions)
                .HasForeignKey(t => t.TransferId)
                .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasIndex(x => new { x.ProductId, x.WarehouseId });
-        builder.HasIndex(it => it.OperationId);
         builder.HasIndex(x => x.OrderId);
     }
 }

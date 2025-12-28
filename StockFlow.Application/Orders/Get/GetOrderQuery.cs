@@ -2,4 +2,4 @@
 
 namespace StockFlow.Application.Orders.Get;
 
-public sealed class GetOrderQuery : IQuery<List<GetOrderResponse>>;
+public sealed class GetOrderQuery : IQuery<IReadOnlyCollection<OrdersResponse>>;

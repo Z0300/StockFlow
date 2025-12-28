@@ -1,27 +1,32 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SharedKernel;
-using StockFlow.Application.Abstractions.Data;
-using StockFlow.Application.Abstractions.Messaging;
-using StockFlow.Domain.DomainErrors;
-using StockFlow.Domain.Entities;
+﻿using StockFlow.Application.Abstractions.Messaging;
+using StockFlow.Domain.Entities.Abstractions;
+using StockFlow.Domain.Entities.Warehouses;
 
 namespace StockFlow.Application.Warehouses.Delete;
 
-internal sealed class DeleteWarehouseCommandValidator(IApplicationDbContext context)
+internal sealed class DeleteWarehouseCommandValidator
     : ICommandHandler<DeleteWarehouseCommand>
 {
-    public async Task<Result> Handle(DeleteWarehouseCommand command, CancellationToken cancellationToken)
+    private readonly IWarehouseRepository _warehouseRepository;
+    private readonly IUnitOfWork _unitOfWork;
+    public DeleteWarehouseCommandValidator(
+        IWarehouseRepository warehouseRepository,
+        IUnitOfWork unitOfWork)
     {
-        Warehouse? warehouse = await context.Warehouses
-            .SingleOrDefaultAsync(c => c.Id == command.WarehouseId, cancellationToken);
+        _warehouseRepository = warehouseRepository;
+        _unitOfWork = unitOfWork;
+    }
+    public async Task<Result> Handle(DeleteWarehouseCommand request, CancellationToken cancellationToken)
+    {
+        Warehouse? warehouse = await _warehouseRepository.GetByIdAsync(new WarehouseId(request.WarehouseId), cancellationToken);
 
         if (warehouse is null)
         {
-            return Result.Failure(WarehouseErrors.NotFound(command.WarehouseId));
+            return Result.Failure(WarehouseErrors.NotFound);
         }
 
-        context.Warehouses.Remove(warehouse);
-        await context.SaveChangesAsync(cancellationToken);
+        _warehouseRepository.Remove(warehouse);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success();
     }

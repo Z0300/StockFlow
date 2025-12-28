@@ -1,6 +1,6 @@
 ﻿namespace StockFlow.Api.Endpoints.Users;
 
-internal static class Permissions
+public static class Permissions
 {
-    internal const string UsersAccess = "users:access";
+    public const string UsersAccess = "users:access";
 }

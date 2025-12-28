@@ -2,5 +2,5 @@
 
 namespace StockFlow.Application.Products.Get;
 
-public sealed record GetProductQuery : IQuery<List<GetProductResponse>>;
+public sealed record GetProductQuery : IQuery<IReadOnlyList<ProductsResponse>>;
 

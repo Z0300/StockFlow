@@ -1,32 +1,45 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SharedKernel;
-using StockFlow.Application.Abstractions.Data;
-using StockFlow.Application.Abstractions.Messaging;
-using StockFlow.Domain.DomainErrors;
-using StockFlow.Domain.Entities;
+﻿using StockFlow.Application.Abstractions.Messaging;
+using StockFlow.Application.Exceptions;
+using StockFlow.Domain.Entities.Abstractions;
+using StockFlow.Domain.Entities.Warehouses;
 
 namespace StockFlow.Application.Warehouses.Create;
 
-internal sealed class CreateWarehouseCommandHandler(IApplicationDbContext context)
+internal sealed class CreateWarehouseCommandHandler
     : ICommandHandler<CreateWarehouseCommand, Guid>
 {
-    public async Task<Result<Guid>> Handle(CreateWarehouseCommand command, CancellationToken cancellationToken)
+    private readonly IWarehouseRepository _warehouseRepository;
+    private readonly IUnitOfWork _unitOfWork;
+    public CreateWarehouseCommandHandler(
+        IWarehouseRepository warehouseRepository,
+        IUnitOfWork unitOfWork)
     {
-        if (await context.Warehouses.AnyAsync(w => w.Name == command.Name, cancellationToken))
+        _warehouseRepository = warehouseRepository;
+        _unitOfWork = unitOfWork;
+    }
+    public async Task<Result<Guid>> Handle(CreateWarehouseCommand request, CancellationToken cancellationToken)
+    {
+        if (await _warehouseRepository.IsNameUnique(request.Name, cancellationToken))
         {
             return Result.Failure<Guid>(WarehouseErrors.NameNotUnique);
         }
 
-        var warehouse = new Warehouse
+        try
         {
-            Id = Guid.NewGuid(),
-            Name = command.Name,
-            Location = command.Location
-        };
+            var category = Warehouse.Create(
+                request.Name,
+                request.Location
+            );
 
-        context.Warehouses.Add(warehouse);
-        await context.SaveChangesAsync(cancellationToken);
+            _warehouseRepository.Add(category);
 
-        return warehouse.Id;
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            return category.Id.Value;
+        }
+        catch (ConcurrencyException)
+        {
+            return Result.Failure<Guid>(WarehouseErrors.NameNotUnique);
+        }
     }
 }

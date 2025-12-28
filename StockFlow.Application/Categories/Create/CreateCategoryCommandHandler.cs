@@ -1,33 +1,45 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SharedKernel;
-using StockFlow.Application.Abstractions.Data;
-using StockFlow.Application.Abstractions.Messaging;
-using StockFlow.Domain.DomainErrors;
-using StockFlow.Domain.Entities;
+﻿using StockFlow.Application.Abstractions.Messaging;
+using StockFlow.Application.Exceptions;
+using StockFlow.Domain.Entities.Abstractions;
+using StockFlow.Domain.Entities.Categories;
 
 namespace StockFlow.Application.Categories.Create;
 
-internal sealed class CreateCategoryCommandHandler(
-    IApplicationDbContext context)
-    : ICommandHandler<CreateCategoryCommand, Guid>
+internal sealed class CreateCategoryCommandHandler : ICommandHandler<CreateCategoryCommand, Guid>
 {
-    public async Task<Result<Guid>> Handle(CreateCategoryCommand command, CancellationToken cancellationToken)
+    private readonly ICategoryRepository _categoryRepository;
+    private readonly IUnitOfWork _unitOfWork;
+    public CreateCategoryCommandHandler(
+        ICategoryRepository categoryRepository,
+        IUnitOfWork unitOfWork)
     {
-        if (await context.Categories.AnyAsync(c => c.Name == command.Name, cancellationToken))
+        _categoryRepository = categoryRepository;
+        _unitOfWork = unitOfWork;
+    }
+    public async Task<Result<Guid>> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
+    {
+        if (await _categoryRepository.IsNameUnique(request.Name, cancellationToken))
         {
             return Result.Failure<Guid>(CategoryErrors.NameNotUnique);
         }
 
-        var category = new Category
+        try
         {
-            Id = Guid.NewGuid(),
-            Name = command.Name,
-            Description = command.Description
-        };
+            var category = Category.Create(
+                request.Name,
+                request.Description
+            );
 
-        context.Categories.Add(category);
-        await context.SaveChangesAsync(cancellationToken);
+            _categoryRepository.Add(category);
 
-        return category.Id;
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            return category.Id.Value;
+        }
+        catch (ConcurrencyException)
+        {
+            return Result.Failure<Guid>(CategoryErrors.NameNotUnique);
+        }
+
     }
 }

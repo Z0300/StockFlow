@@ -1,28 +1,36 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SharedKernel;
+﻿using System.Data;
+using Dapper;
+using Microsoft.EntityFrameworkCore;
 using StockFlow.Application.Abstractions.Data;
 using StockFlow.Application.Abstractions.Messaging;
+using StockFlow.Application.Suppliers.Shared;
+using StockFlow.Domain.Entities.Abstractions;
 
 namespace StockFlow.Application.Orders.Get;
 
-internal sealed class GetOrderQueryHandler(IApplicationDbContext context)
-    : IQueryHandler<GetOrderQuery, List<GetOrderResponse>>
+internal sealed class GetOrderQueryHandler
+    : IQueryHandler<GetOrderQuery, IReadOnlyCollection<OrdersResponse>>
 {
-    public async Task<Result<List<GetOrderResponse>>> Handle(GetOrderQuery query, CancellationToken cancellationToken)
+    private readonly ISqlConnectionFactory _connectionFactory;
+
+    public GetOrderQueryHandler(ISqlConnectionFactory connectionFactory)
     {
-        List<GetOrderResponse> orders = await context.Orders
-            .AsNoTracking()
-            .Select(order => new GetOrderResponse
-            {
-                Id = order.Id,
-                OrderDate = order.CreatedAt,
-                SupplierName = order.Supplier != null ? order.Supplier.Name : string.Empty,
-                TotalAmount = order.OrderItems.Sum(item => item.UnitPrice * item.Quantity),
-                Status = order.OrderStatus.ToString()
-            })
-            .ToListAsync(cancellationToken);
+        _connectionFactory = connectionFactory;
+    }
+    public async Task<Result<IReadOnlyCollection<OrdersResponse>>> Handle(GetOrderQuery query, CancellationToken cancellationToken)
+    {
+        using IDbConnection connection = _connectionFactory.CreateConnection();
 
+        const string sql = """
+                SELECT 
+                  id AS OrderId,
+                  order_date AS OrderDate,
+                  total_amount AS OrderTotalAmount,
+                  status AS OrderStatus
+                FROM orders  
+                """;
 
-        return orders;
+        IEnumerable<OrdersResponse> orders = await connection.QueryAsync<OrdersResponse>(sql);
+        return orders.ToList();
     }
 }

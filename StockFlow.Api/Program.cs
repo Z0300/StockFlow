@@ -12,6 +12,9 @@ builder.Host.UseSerilog((context, loggerConfig) =>
 
 builder.Services.AddOpenApi();
 
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGenWithAuth();
 
 builder.Services
@@ -19,12 +22,9 @@ builder.Services
     .AddPresentation()
     .AddInfrastructure(builder.Configuration);
 
-builder.Services.AddEndpoints(Assembly.GetExecutingAssembly());
 
 WebApplication app = builder.Build();
 
-
-app.MapEndpoints();
 
 if (app.Environment.IsDevelopment())
 {
@@ -42,5 +42,7 @@ app.UseExceptionHandler();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.MapControllers();
 
 await app.RunAsync();

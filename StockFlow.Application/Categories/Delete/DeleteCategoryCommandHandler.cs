@@ -1,28 +1,34 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SharedKernel;
-using StockFlow.Application.Abstractions.Data;
-using StockFlow.Application.Abstractions.Messaging;
-using StockFlow.Domain.DomainErrors;
-using StockFlow.Domain.Entities;
+﻿using StockFlow.Application.Abstractions.Messaging;
+using StockFlow.Domain.Entities.Abstractions;
+using StockFlow.Domain.Entities.Categories;
 
 namespace StockFlow.Application.Categories.Delete;
 
-internal sealed class DeleteCategoryCommandHandler(IApplicationDbContext context)
-    : ICommandHandler<DeleteCategoryCommand>
+internal sealed class DeleteCategoryCommandHandler : ICommandHandler<DeleteCategoryCommand>
 {
-    public async Task<Result> Handle(DeleteCategoryCommand command, CancellationToken cancellationToken)
+    private readonly ICategoryRepository _categoryRepository;
+    private readonly IUnitOfWork _unitOfWork;
+
+    public DeleteCategoryCommandHandler(
+       ICategoryRepository categoryRepository,
+       IUnitOfWork unitOfWork)
     {
-        Category? category = await context.Categories
-            .SingleOrDefaultAsync(c => c.Id == command.Id, cancellationToken);
+        _categoryRepository = categoryRepository;
+        _unitOfWork = unitOfWork;
+    }
+
+    public async Task<Result> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
+    {
+        Category? category = await _categoryRepository.GetByIdAsync(new CategoryId(request.Id), cancellationToken);
 
         if (category is null)
         {
-            return Result.Failure(CategoryErrors.NotFound(command.Id));
+            return Result.Failure(CategoryErrors.NotFound);
         }
 
-        context.Categories.Remove(category);
+        _categoryRepository.Remove(category);
 
-        await context.SaveChangesAsync(cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success();
     }

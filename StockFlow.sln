@@ -11,8 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockFlow.Domain", "StockFl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockFlow.Infrastructure", "StockFlow.Infrastructure\StockFlow.Infrastructure.csproj", "{E115EBB4-A4ED-4C29-8705-47959F8CC861}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedKernel", "SharedKernel\SharedKernel.csproj", "{850A7748-B6CC-4E7C-82C3-1A938CE35E34}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{56F3882A-0101-412D-90BB-7CACE93BCB05}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -44,10 +42,6 @@ Global
 		{E115EBB4-A4ED-4C29-8705-47959F8CC861}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E115EBB4-A4ED-4C29-8705-47959F8CC861}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E115EBB4-A4ED-4C29-8705-47959F8CC861}.Release|Any CPU.Build.0 = Release|Any CPU
-		{850A7748-B6CC-4E7C-82C3-1A938CE35E34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{850A7748-B6CC-4E7C-82C3-1A938CE35E34}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{850A7748-B6CC-4E7C-82C3-1A938CE35E34}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{850A7748-B6CC-4E7C-82C3-1A938CE35E34}.Release|Any CPU.Build.0 = Release|Any CPU
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU

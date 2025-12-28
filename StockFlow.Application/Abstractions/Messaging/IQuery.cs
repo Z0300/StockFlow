@@ -1,3 +1,8 @@
-﻿namespace StockFlow.Application.Abstractions.Messaging;
+﻿using MediatR;
+using StockFlow.Domain.Entities.Abstractions;
 
-public interface IQuery<TResponse>;
+namespace StockFlow.Application.Abstractions.Messaging;
+
+public interface IQuery<TResponse> : IRequest<Result<TResponse>>
+{
+}

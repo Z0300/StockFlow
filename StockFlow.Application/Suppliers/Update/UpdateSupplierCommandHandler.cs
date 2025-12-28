@@ -1,28 +1,34 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SharedKernel;
-using StockFlow.Application.Abstractions.Data;
-using StockFlow.Application.Abstractions.Messaging;
-using StockFlow.Domain.DomainErrors;
-using StockFlow.Domain.Entities;
+﻿using StockFlow.Application.Abstractions.Messaging;
+using StockFlow.Domain.Entities.Abstractions;
+using StockFlow.Domain.Entities.Suppliers;
 
 namespace StockFlow.Application.Suppliers.Update;
 
-internal sealed class UpdateSupplierCommandHandler(IApplicationDbContext context)
+internal sealed class UpdateSupplierCommandHandler
     : ICommandHandler<UpdateSupplierCommand>
 {
-    public async Task<Result> Handle(UpdateSupplierCommand command, CancellationToken cancellationToken)
+    private readonly ISupplierRepository _supplierRepository;
+    private readonly IUnitOfWork _unitOfWork;
+    public UpdateSupplierCommandHandler(
+        ISupplierRepository supplierRepository,
+        IUnitOfWork unitOfWork)
     {
-        Supplier? supplier = await context.Suppliers
-            .SingleOrDefaultAsync(x => x.Id == command.SupplierId, cancellationToken);
+        _supplierRepository = supplierRepository;
+        _unitOfWork = unitOfWork;
+    }
+    public async Task<Result> Handle(UpdateSupplierCommand request, CancellationToken cancellationToken)
+    {
+        Supplier? category = await _supplierRepository.GetByIdAsync(new SupplierId(request.SupplierId), cancellationToken);
 
-        if (supplier is null)
+        if (category is null)
         {
-            return Result.Failure(SupplierErrors.NotFound(command.SupplierId));
+            return Result.Failure(SupplierErrors.NotFound);
         }
 
-        supplier.Name = command.Name;
-        supplier.ContactInfo = command.ContactInfo;
-        await context.SaveChangesAsync(cancellationToken);
+        category.ChangeName(request.Name);
+        category.ChangeContactInfo(request.ContactInfo);
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success();
     }
