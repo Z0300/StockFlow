@@ -27,9 +27,9 @@ internal sealed class GetOrderByIdQueryHandler
         const string sql = """
                 SELECT 
                     a.id AS OrderId,
-                    a.order_date AS OrderDate,
-                    a.total_amount AS OrderTotalAmount,
-                    a.status AS OrderStatus,
+                    a.created_at AS OrderDate,
+                    a.received_at AS ReceivedDate,
+                    a.order_status AS OrderStatus,
 
                     b.id AS WarehouseId,
                     b.name AS WarehouseName,
@@ -37,12 +37,13 @@ internal sealed class GetOrderByIdQueryHandler
 
                     c.id AS SupplierId,
                     c.name AS SupplierName,
-                    c.contact_info AS SupplierContactInfo,
+                    c.contact_info AS SupplierContactInfo, 
 
                     p.id AS ProductId,
                     p.name AS ProductName,
                     d.quantity AS Quantity,
-                    d.unit_price AS UnitPrice
+                    d.unit_price_amount AS UnitPrice,
+                    d.unit_price_currency AS Currency
 
                 FROM orders a
                 INNER JOIN warehouses b ON a.warehouse_id = b.id
@@ -53,10 +54,10 @@ internal sealed class GetOrderByIdQueryHandler
                 """;
 
         IEnumerable<OrderResponse> orders = await connection
-            .QueryAsync<OrderResponse, 
-                        WarehouseResponse, 
-                        SupplierResponse, 
-                        OrderItemResponse, 
+            .QueryAsync<OrderResponse,
+                        WarehouseResponse,
+                        SupplierResponse,
+                        OrderItemResponse,
                         OrderResponse>(sql,
                         (order, warehouse, supplier, orderItem) =>
                         {
@@ -66,6 +67,7 @@ internal sealed class GetOrderByIdQueryHandler
                             order.OrderItems.Add(orderItem);
                             return order;
                         },
+                        new { query.OrderId },
                         splitOn: "WarehouseId,SupplierId,ProductId");
 
         OrderResponse? order = orders.FirstOrDefault();

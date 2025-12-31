@@ -18,7 +18,7 @@ internal sealed class CreateOrderCommandHandler
     private readonly IDateTimeProvider _dateTimeProvider;
 
     public CreateOrderCommandHandler(
-        IOrderRepository orderRepository, 
+        IOrderRepository orderRepository,
         IUnitOfWork unitOfWork,
         IDateTimeProvider dateTimeProvider)
     {
@@ -29,15 +29,15 @@ internal sealed class CreateOrderCommandHandler
     public async Task<Result<Guid>> Handle(CreateOrderCommand command, CancellationToken cancellationToken)
     {
         var order = Order.Create(
-               warehouseId: new WarehouseId(command.WarehouseId),
-               supplierId: new SupplierId(command.SupplierId),
-               orderStatus: OrderStatus.Pending,
-                createdAt: _dateTimeProvider.UtcNow,
-               items: [.. command.Items
+                new WarehouseId(command.WarehouseId),
+                new SupplierId(command.SupplierId),
+                OrderStatus.Pending,
+                _dateTimeProvider.UtcNow,
+                [.. command.Items
                    .Select(item => OrderItem.Create(
-                       productId: new ProductId(item.ProductId),
-                       quantity: item.Quantity,
-                       unitPrice: new Money(item.UnitPrice, Currency.Php)))]);
+                        new ProductId(item.ProductId),
+                        item.Quantity,
+                        new Money(item.UnitPrice, Currency.Php)))]);
 
         _orderRepository.Add(order);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
