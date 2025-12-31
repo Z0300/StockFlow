@@ -5,6 +5,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Folder Include="Entities\Orders\ValueObjects\" />
 	  <Folder Include="Entities\Transactions\Events\" />
 	</ItemGroup>
 

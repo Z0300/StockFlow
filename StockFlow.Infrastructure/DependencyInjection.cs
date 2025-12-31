@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System.Net.NetworkInformation;
+using System.Text;
+using Dapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +16,7 @@ using StockFlow.Application.Abstractions.Data;
 using StockFlow.Domain.Entities.Abstractions;
 using StockFlow.Domain.Entities.Categories;
 using StockFlow.Domain.Entities.Orders;
+using StockFlow.Domain.Entities.Orders.Enums;
 using StockFlow.Domain.Entities.Products;
 using StockFlow.Domain.Entities.Suppliers;
 using StockFlow.Domain.Entities.Transactions;
@@ -93,6 +96,8 @@ public static class DependencyInjection
             services.AddScoped<ITransactionRepository, TransactionRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             #endregion
+
+          
 
 
             return services;

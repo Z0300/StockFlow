@@ -5,6 +5,7 @@ using StockFlow.Application.Abstractions.Data;
 using StockFlow.Application.Abstractions.Messaging;
 using StockFlow.Application.Suppliers.Shared;
 using StockFlow.Domain.Entities.Abstractions;
+using StockFlow.Domain.Entities.Orders.Enums;
 
 namespace StockFlow.Application.Orders.Get;
 
@@ -24,13 +25,14 @@ internal sealed class GetOrderQueryHandler
         const string sql = """
                 SELECT 
                   id AS OrderId,
-                  order_date AS OrderDate,
-                  total_amount AS OrderTotalAmount,
-                  status AS OrderStatus
+                  created_at AS OrderDate,
+                  received_at AS ReceivedDate,
+                  order_status AS OrderStatus
                 FROM orders  
                 """;
 
         IEnumerable<OrdersResponse> orders = await connection.QueryAsync<OrdersResponse>(sql);
+
         return orders.ToList();
     }
 }

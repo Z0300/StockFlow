@@ -36,10 +36,10 @@ public class OrdersController : ControllerBase
         return Ok(result.Value);
     }
 
-    [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetOrder(Guid id, CancellationToken cancellationToken)
+    [HttpGet("{orderId:guid}")]
+    public async Task<IActionResult> GetOrder(Guid orderId, CancellationToken cancellationToken)
     {
-        var query = new GetOrderByIdQuery(id);
+        var query = new GetOrderByIdQuery(orderId);
         Result<OrderResponse> result = await _sender.Send(query, cancellationToken);
         if (result.IsFailure)
         {
@@ -62,7 +62,7 @@ public class OrdersController : ControllerBase
         {
             return BadRequest(result.Error);
         }
-        return CreatedAtAction(nameof(GetOrder), new { id = result.Value }, result.Value);
+        return CreatedAtAction(nameof(GetOrder), new { orderId = result.Value }, result.Value);
     }
 
     [HttpPut("{orderId:guid}")]
