@@ -2,7 +2,7 @@
 
 public sealed class SupplierResponse
 {
-    public Guid SupplierId { get; set; }
-    public string SupplierName { get; set; }
-    public string SupplierContactInfo { get; set; }
+    public Guid SupplierId { get; init; }
+    public string SupplierName { get; init; }
+    public string SupplierContactInfo { get; init; }
 }

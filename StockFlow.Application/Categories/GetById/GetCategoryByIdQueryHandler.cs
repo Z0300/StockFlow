@@ -39,7 +39,7 @@ internal sealed class GetCategoryByIdQueryHandler
                 request.CategoryId
             });
 
-        if (category == null)
+        if (category is null)
         {
             return Result.Failure<CategoryResponse>(CategoryErrors.NotFound);
         }

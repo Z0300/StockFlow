@@ -10,7 +10,7 @@ using StockFlow.Domain.Entities.Abstractions;
 
 namespace StockFlow.Api.Endpoints.Suppliers;
 
-[Route("api/[controller]")]
+[Route("api/suppliers")]
 [ApiController]
 public class SuppliersController : ControllerBase
 {
@@ -28,7 +28,7 @@ public class SuppliersController : ControllerBase
 
         Result<IReadOnlyList<SupplierResponse>> result = await _sender.Send(query, cancellationToken);
 
-        return Ok(result);
+        return Ok(result.Value);
     }
 
     [HttpGet("{supplierId:guid}")]
@@ -38,7 +38,7 @@ public class SuppliersController : ControllerBase
 
         Result<SupplierResponse> result = await _sender.Send(query, cancellationToken);
 
-        return Ok(result);
+        return Ok(result.Value);
     }
 
     [HttpPost]
@@ -54,7 +54,7 @@ public class SuppliersController : ControllerBase
         {
             return BadRequest(result.Error);
         }
-        return CreatedAtAction(nameof(GetSupplier), new { id = result.Value }, result.Value);
+        return CreatedAtAction(nameof(GetSupplier), new { supplierId = result.Value }, result.Value);
     }
 
     [HttpPut("{supplierId:guid}")]

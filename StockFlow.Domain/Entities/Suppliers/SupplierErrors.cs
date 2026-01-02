@@ -9,6 +9,6 @@ public static class SupplierErrors
        "The name provided is not unique.");
 
     public static readonly Error NotFound = new(
-      "Suppliers.NotFound",
+      "Suppliers.Found",
       $"The supplier item with the specified identifier was not found");
 }
