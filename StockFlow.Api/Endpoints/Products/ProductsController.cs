@@ -1,9 +1,5 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using StockFlow.Application.Categories.Delete;
-using StockFlow.Application.Categories.Update;
-using StockFlow.Application.Orders.Create;
 using StockFlow.Application.Products.Create;
 using StockFlow.Application.Products.Delete;
 using StockFlow.Application.Products.Get;
@@ -13,7 +9,7 @@ using StockFlow.Domain.Entities.Abstractions;
 
 namespace StockFlow.Api.Endpoints.Products;
 
-[Route("api/[controller]")]
+[Route("api/products")]
 [ApiController]
 public class ProductsController : ControllerBase
 {
@@ -61,7 +57,7 @@ public class ProductsController : ControllerBase
         {
             return BadRequest(result.Error);
         }
-        return CreatedAtAction(nameof(GetProduct), new { id = result.Value }, result.Value);
+        return CreatedAtAction(nameof(GetProduct), new { productId = result.Value }, result.Value);
     }
 
     [HttpPut("{productId:guid}")]

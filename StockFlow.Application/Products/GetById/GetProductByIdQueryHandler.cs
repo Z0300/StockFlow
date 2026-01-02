@@ -26,12 +26,15 @@ internal sealed class GetProductByIdQueryHandler
         const string sql = """
                 SELECT 
                     p.id AS ProductIdId,
-                    p.name AS ProductIdName,
-                    p.sku AS ProductIdSku,
-                    p.price AS ProductIdPrice
+                    p.name AS ProductName,
+                    p.sku AS ProductSku,
+                    p.price_amount AS ProductPrice,
+                    p.price_currency AS ProductCurrency,
+
                     c.id AS CategoryId,
                     c.name AS CategoryName,
                     c.description AS CategoryDescription
+
                 FROM products p
                 INNER JOIN categories c ON p.category_id = c.id
                 WHERE p.id = @ProductId;
