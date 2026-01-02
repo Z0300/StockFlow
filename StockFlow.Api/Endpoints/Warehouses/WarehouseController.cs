@@ -11,7 +11,7 @@ using StockFlow.Domain.Entities.Abstractions;
 
 namespace StockFlow.Api.Endpoints.Warehouses;
 
-[Route("api/[controller]")]
+[Route("api/warehouses")]
 [ApiController]
 public class WarehouseController : ControllerBase
 {
@@ -56,7 +56,7 @@ public class WarehouseController : ControllerBase
         {
             return BadRequest(result.Error);
         }
-        return CreatedAtAction(nameof(GetWarehouse), new { id = result.Value }, result.Value);
+        return CreatedAtAction(nameof(GetWarehouse), new { warehouseId = result.Value }, result.Value);
     }
 
     [HttpPut("{warehouseId:guid}")]
