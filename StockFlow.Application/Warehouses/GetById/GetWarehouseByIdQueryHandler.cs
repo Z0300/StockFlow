@@ -29,10 +29,14 @@ internal sealed class GetWarehouseByIdQueryHandler
                     name AS WarehouseName,
                     location AS WarehouseLocation
                 FROM warehouses
-                WHERE id = @CategoryId
+                WHERE id = @WarehouseId
                 """;
 
-        WarehouseResponse warehouse = await connection.QueryFirstOrDefaultAsync<WarehouseResponse>(sql);
+        WarehouseResponse warehouse = await connection.QueryFirstOrDefaultAsync<WarehouseResponse>(sql,
+            new
+            {
+                query.WarehouseId
+            });
 
         return warehouse;
     }
