@@ -6,6 +6,7 @@ using StockFlow.Application.Abstractions.Data;
 using StockFlow.Application.Abstractions.Messaging;
 using StockFlow.Application.Suppliers.Shared;
 using StockFlow.Domain.Entities.Abstractions;
+using StockFlow.Domain.Entities.Suppliers;
 
 namespace StockFlow.Application.Suppliers.GetById;
 
@@ -32,10 +33,16 @@ internal sealed class GetSupplierByIdQueryHandler
             WHERE id = @SupplierId;
             """;
 
-        SupplierResponse? supplier = await connection.QueryFirstOrDefaultAsync<SupplierResponse>(sql, new
+        SupplierResponse supplier = await connection.QueryFirstOrDefaultAsync<SupplierResponse>(sql,
+            new
+            {
+                request.SupplierId
+            });
+
+        if (supplier is null)
         {
-            request.SupplierId
-        });
+            return Result.Failure<SupplierResponse>(SupplierErrors.NotFound);
+        }
 
         return supplier;
     }
