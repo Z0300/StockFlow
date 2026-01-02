@@ -1,9 +1,10 @@
 ﻿namespace StockFlow.Application.Products.Get;
 
-public class ProductsResponse
+public sealed class ProductsResponse
 {
-    public Guid ProductId { get; set; }
-    public string ProductName { get; set; }
-    public string ProductSku { get; set; }
-    public decimal ProductPrice { get; set; }
+    public Guid ProductId { get; init; }
+    public string ProductName { get; init; }
+    public string ProductSku { get; init; }
+    public decimal ProductPrice { get; init; }
+    public string ProductCurrency { get; init; }
 };

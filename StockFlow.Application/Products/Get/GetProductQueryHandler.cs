@@ -25,7 +25,8 @@ internal sealed class GetProductQueryHandler
                     id AS ProductId,
                     name AS ProductName,
                     sku AS ProductSku,
-                    price AS ProductPrice,
+                    price_amount AS ProductPrice,
+                    price_currency AS ProductCurrency
                 FROM products
                 """;
 
