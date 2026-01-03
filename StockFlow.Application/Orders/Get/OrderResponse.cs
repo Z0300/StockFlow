@@ -1,5 +1,4 @@
-﻿using StockFlow.Application.Suppliers.Shared;
-using StockFlow.Domain.Entities.Orders.Enums;
+﻿using StockFlow.Domain.Entities.Orders.Enums;
 
 namespace StockFlow.Application.Orders.Get;
 

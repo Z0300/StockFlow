@@ -1,7 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using StockFlow.Application.Abstractions.Authentication;
+﻿using StockFlow.Application.Abstractions.Authentication;
 using StockFlow.Application.Abstractions.Messaging;
-using StockFlow.Domain.Entities;
 using StockFlow.Domain.Entities.Abstractions;
 using StockFlow.Domain.Entities.Users;
 using StockFlow.Domain.Entities.Users.ValueObjects;
@@ -26,7 +24,7 @@ internal sealed class RegisterUserCommandHandler
     }
     public async Task<Result<Guid>> Handle(RegisterUserCommand command, CancellationToken cancellationToken)
     {
- 
+
         var user = User.Create(
             command.FirstName,
             command.LastName,

@@ -1,5 +1,4 @@
-﻿using System.Net.NetworkInformation;
-using System.Text;
+﻿using System.Text;
 using Dapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -16,7 +15,6 @@ using StockFlow.Application.Abstractions.Data;
 using StockFlow.Domain.Entities.Abstractions;
 using StockFlow.Domain.Entities.Categories;
 using StockFlow.Domain.Entities.Orders;
-using StockFlow.Domain.Entities.Orders.Enums;
 using StockFlow.Domain.Entities.Products;
 using StockFlow.Domain.Entities.Suppliers;
 using StockFlow.Domain.Entities.Transactions;
@@ -49,7 +47,7 @@ public static class DependencyInjection
         private IServiceCollection AddServices(IConfiguration configuration)
         {
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
-          
+
             return services;
         }
 
@@ -97,8 +95,7 @@ public static class DependencyInjection
             services.AddScoped<IUserRepository, UserRepository>();
             #endregion
 
-          
-
+            SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());
 
             return services;
         }

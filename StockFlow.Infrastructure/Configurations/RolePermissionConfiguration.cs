@@ -23,5 +23,5 @@ internal sealed class RolePermissionConfiguration
             });
     }
 
-  
+
 }

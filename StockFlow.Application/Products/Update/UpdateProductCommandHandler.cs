@@ -1,6 +1,4 @@
-﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
-using StockFlow.Application.Abstractions.Messaging;
+﻿using StockFlow.Application.Abstractions.Messaging;
 using StockFlow.Domain.Entities.Abstractions;
 using StockFlow.Domain.Entities.Categories;
 using StockFlow.Domain.Entities.Products;

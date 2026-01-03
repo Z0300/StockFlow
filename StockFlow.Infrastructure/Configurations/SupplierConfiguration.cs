@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using StockFlow.Domain.Entities.Categories;
 using StockFlow.Domain.Entities.Suppliers;
 
 namespace StockFlow.Infrastructure.Configurations;

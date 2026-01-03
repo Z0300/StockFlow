@@ -37,4 +37,8 @@
 		<ProjectReference Include="..\StockFlow.Infrastructure\StockFlow.Infrastructure.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Infrastructure\" />
+	</ItemGroup>
+
 </Project>

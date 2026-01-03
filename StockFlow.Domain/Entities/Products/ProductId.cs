@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace StockFlow.Domain.Entities.Products;
+﻿namespace StockFlow.Domain.Entities.Products;
 
 public record ProductId(Guid Value)
 {

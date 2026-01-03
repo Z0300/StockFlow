@@ -1,6 +1,4 @@
-﻿using StockFlow.Api.Infrastructure;
-
-namespace StockFlow.Api;
+﻿namespace StockFlow.Api;
 
 public static class DependencyInjection
 {
@@ -9,10 +7,6 @@ public static class DependencyInjection
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
 
-        // REMARK: If you want to use Controllers, you'll need this.
-        // services.AddControllers();
-
-        services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
 
         return services;

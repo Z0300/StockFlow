@@ -20,7 +20,7 @@ public class OrderItem : Entity<OrderItemId>
 
     protected OrderItem() { }
 
-
+    public OrderId OrderId { get; protected set; }
     public ProductId ProductId { get; private set; }
     public int Quantity { get; private set; }
     public Money UnitPrice { get; private set; }

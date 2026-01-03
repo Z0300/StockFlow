@@ -27,7 +27,7 @@ public class Transfer : Entity<TransferId>
         CreatedAt = createdAt;
         DispatchAt = dispatchAt;
         ReceivedAt = receivedAt;
-        Items = items;
+        TransferItem = items;
         Transactions = transactions;
     }
 
@@ -39,7 +39,7 @@ public class Transfer : Entity<TransferId>
     public DateTime CreatedAt { get; private set; }
     public DateTime? DispatchAt { get; private set; }
     public DateTime? ReceivedAt { get; private set; }
-    public List<TransferItem> Items { get; private set; }
+    public List<TransferItem> TransferItem { get; private set; }
     public List<Transaction>? Transactions { get; private set; }
 
     public static Transfer CreateTransfer(

@@ -3,7 +3,6 @@ using StockFlow.Application.Abstractions.Clock;
 using StockFlow.Application.Abstractions.Messaging;
 using StockFlow.Domain.Entities.Abstractions;
 using StockFlow.Domain.Entities.Transfers;
-using StockFlow.Domain.Entities.Transfers.Enums;
 
 namespace StockFlow.Application.Transactions.DispatchTransfer;
 
@@ -33,7 +32,7 @@ internal sealed class DispatchTransferCommandHandler
         }
 
         transfer.Dispatch(_dateTimeProvider.UtcNow);
-       
+
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success();

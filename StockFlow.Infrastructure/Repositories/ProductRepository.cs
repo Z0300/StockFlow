@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.EntityFrameworkCore;
-using StockFlow.Domain.Entities.Categories;
+﻿using Microsoft.EntityFrameworkCore;
 using StockFlow.Domain.Entities.Products;
 using StockFlow.Infrastructure.Database;
 

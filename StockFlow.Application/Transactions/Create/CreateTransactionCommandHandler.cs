@@ -3,6 +3,7 @@ using StockFlow.Application.Abstractions.Messaging;
 using StockFlow.Domain.Entities.Abstractions;
 using StockFlow.Domain.Entities.Orders;
 using StockFlow.Domain.Entities.Products;
+using StockFlow.Domain.Entities.TransactionItems;
 using StockFlow.Domain.Entities.Transactions;
 using StockFlow.Domain.Entities.Warehouses;
 using StockFlow.Domain.Shared;
@@ -15,39 +16,40 @@ internal sealed class CreateTransactionCommandHandler
 {
     private readonly ITransactionRepository _transactionRepository;
     private readonly IDateTimeProvider _dateTimeProvider;
+    private readonly IUnitOfWork _unitOfWork;
 
     public CreateTransactionCommandHandler(
         ITransactionRepository transactionRepository,
-        IDateTimeProvider dateTimeProvider)
+        IDateTimeProvider dateTimeProvider,
+        IUnitOfWork unitOfWork)
     {
         _transactionRepository = transactionRepository;
         _dateTimeProvider = dateTimeProvider;
+        _unitOfWork = unitOfWork;
     }
     public async Task<Result<Guid>> Handle(
         CreateTransactionCommand request,
         CancellationToken cancellationToken)
     {
 
-
-        IEnumerable<(ProductId ProductId, int Quantity, Money? UnitCost)> items = request.Items.Select(i =>
-            (
-                ProductId: new ProductId(i.ProductId),
-                Quantity: i.QuantityChange,
-                UnitCost: (Money?)new Money(i.UnitCost, Currency.Php)
-            ));
-
-
-        IReadOnlyCollection<Transaction> transctions = Transaction.CreateMany(
+        var transaction = Transaction.Create(
             new WarehouseId(request.WarehouseId),
             request.TransactionType,
             request.Reason,
-            request.OrderId is not null ? new OrderId(request.OrderId.Value) : null,
+            new OrderId(request.OrderId!.Value),
             null,
             _dateTimeProvider.UtcNow,
-            items);
+            [.. request.Items
+                .Select(item => TransactionItem.Create(
+                    new ProductId(item.ProductId),
+                    item.QuantityChange,
+                    item.UnitCost.HasValue
+                        ? new Money(item.UnitCost.Value, Currency.Php)
+                        : null))]);
 
-        await _transactionRepository.BulkInsertAsync(transctions, cancellationToken);
+        _transactionRepository.Add(transaction);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return transctions.FirstOrDefault()!.Id.Value;
+        return transaction.Id.Value;
     }
 }

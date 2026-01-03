@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using StockFlow.Domain.Entities.Suppliers;
-
-namespace StockFlow.Domain.Entities.Products;
+﻿namespace StockFlow.Domain.Entities.Products;
 
 public interface IProductRepository
 {

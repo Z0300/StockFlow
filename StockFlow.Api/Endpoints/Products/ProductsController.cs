@@ -26,7 +26,7 @@ public class ProductsController : ControllerBase
         var query = new GetProductQuery();
 
         Result<IReadOnlyList<ProductsResponse>> result = await _sender.Send(query, cancellationToken);
-       
+
         return Ok(result.Value);
     }
 

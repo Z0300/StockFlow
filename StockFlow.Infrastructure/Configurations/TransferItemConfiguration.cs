@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using StockFlow.Domain.Entities.Categories;
 using StockFlow.Domain.Entities.Products;
 using StockFlow.Domain.Entities.TransferItems;
 using StockFlow.Domain.Entities.Transfers;
@@ -26,7 +25,7 @@ internal sealed class TransferItemConfiguration : IEntityTypeConfiguration<Trans
                .HasForeignKey(it => it.ProductId);
 
         builder.HasOne<Transfer>()
-               .WithMany(t => t.Items)
+               .WithMany(t => t.TransferItem)
                .HasForeignKey(it => it.TransferId)
                .OnDelete(DeleteBehavior.Cascade);
 

@@ -1,5 +1,4 @@
-﻿using System.Security.Cryptography;
-using StockFlow.Domain.Entities.Abstractions;
+﻿using StockFlow.Domain.Entities.Abstractions;
 
 namespace StockFlow.Domain.Entities.Categories;
 

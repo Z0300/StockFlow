@@ -5,6 +5,7 @@
   <ItemGroup>
     <PackageVersion Include="Ardalis.SmartEnum" Version="8.2.0" />
     <PackageVersion Include="Dapper" Version="2.1.66" />
+    <PackageVersion Include="Dapper.SimpleSqlBuilder" Version="4.2.3" />
     <PackageVersion Include="MassTransit" Version="8.5.7" />
     <PackageVersion Include="MassTransit.RabbitMQ" Version="8.5.7" />
     <PackageVersion Include="MediatR" Version="12.5.0" />

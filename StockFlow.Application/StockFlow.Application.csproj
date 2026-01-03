@@ -6,6 +6,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Dapper" />
+		<PackageReference Include="Dapper.SimpleSqlBuilder" />
 		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
 		<PackageReference Include="MediatR" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" />
