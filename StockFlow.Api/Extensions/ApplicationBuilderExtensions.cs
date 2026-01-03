@@ -1,4 +1,6 @@
-﻿namespace StockFlow.Api.Extensions;
+﻿using StockFlow.Api.Middleware;
+
+namespace StockFlow.Api.Extensions;
 
 public static class ApplicationBuilderExtensions
 {
@@ -14,4 +16,10 @@ public static class ApplicationBuilderExtensions
 
         return app;
     }
+
+    public static void UseCustomExceptionHandler(this IApplicationBuilder app)
+        => app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+    public static IApplicationBuilder UseRequestContextLogging(this IApplicationBuilder app)
+        => app.UseMiddleware<RequestContextLoggingMiddleware>();
 }

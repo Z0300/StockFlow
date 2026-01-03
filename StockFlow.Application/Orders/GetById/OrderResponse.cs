@@ -9,7 +9,7 @@ public sealed class OrderResponse
     public Guid OrderId { get; init; }
     public DateTime OrderDate { get; init; }
     public WarehouseResponse Warehouse { get; set; }
-    public SupplierResponse Supplier { get; set; } 
+    public SupplierResponse Supplier { get; set; }
     public OrderStatus OrderStatus { get; init; }
     public List<OrderItemResponse> OrderItems { get; set; } = [];
 }
@@ -17,7 +17,7 @@ public sealed class OrderResponse
 public sealed class OrderItemResponse
 {
     public Guid ProductId { get; init; }
-    public string ProductName { get; init; } 
+    public string ProductName { get; init; }
     public int Quantity { get; init; }
     public decimal UnitPrice { get; init; }
     public string Currency { get; set; }

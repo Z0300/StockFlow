@@ -50,7 +50,7 @@ internal sealed class CreateTransferOutCommandHandler
              new WarehouseId(request.DestinationWarehouseId),
              _dateTimeProvider.UtcNow,
              request.Items.Select(i =>
-                 new TransferItem(
+                  TransferItem.Create(
                      new ProductId(i.ProductId),
                      i.RequestedQuantity)));
 

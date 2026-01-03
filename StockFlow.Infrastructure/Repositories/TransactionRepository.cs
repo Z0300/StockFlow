@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using StockFlow.Domain.Entities.Products;
+using StockFlow.Domain.Entities.TransactionItems;
 using StockFlow.Domain.Entities.Transactions;
 using StockFlow.Domain.Entities.Warehouses;
 using StockFlow.Infrastructure.Database;
@@ -16,18 +13,13 @@ internal sealed class TransactionRepository : Repository<Transaction, Transactio
     {
     }
 
-    public async Task BulkInsertAsync(IEnumerable<Transaction> transactions, CancellationToken cancellationToken)
-    {
-        await DbContext.BulkInsertOptimizedAsync(transactions, 
-            options =>  options.IncludeGraph = true,
-            cancellationToken: cancellationToken);
-    }
-
     public async Task<int> GetAvailableQuantity(WarehouseId warehouseId, ProductId productId, CancellationToken cancellationToken)
     {
-       return await DbContext
-            .Set<Transaction>()
-            .Where(t => t.WarehouseId == warehouseId && t.ProductId == productId)
-            .SumAsync(t => t.QuantityChange, cancellationToken);
+        return await DbContext
+             .Set<TransactionItem>()
+             .Include(ti => ti.Transaction)
+             .Where(ti => ti.Transaction.WarehouseId == warehouseId && ti.ProductId == productId)
+             .SumAsync(ti => ti.QuantityChange, cancellationToken);
+
     }
 }

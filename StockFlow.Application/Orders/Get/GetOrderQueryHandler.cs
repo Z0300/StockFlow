@@ -3,9 +3,7 @@ using Dapper;
 using Microsoft.EntityFrameworkCore;
 using StockFlow.Application.Abstractions.Data;
 using StockFlow.Application.Abstractions.Messaging;
-using StockFlow.Application.Suppliers.Shared;
 using StockFlow.Domain.Entities.Abstractions;
-using StockFlow.Domain.Entities.Orders.Enums;
 
 namespace StockFlow.Application.Orders.Get;
 

@@ -13,6 +13,6 @@ public sealed record CreateTransactionCommand(
 public sealed record TransactionItems(
     Guid ProductId,
     int QuantityChange,
-    decimal UnitCost
+    decimal? UnitCost
 );
 

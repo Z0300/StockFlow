@@ -1,4 +1,3 @@
-using System.Reflection;
 using Serilog;
 using StockFlow.Api;
 using StockFlow.Api.Extensions;
@@ -37,7 +36,7 @@ app.UseRequestContextLogging();
 
 app.UseSerilogRequestLogging();
 
-app.UseExceptionHandler();
+app.UseCustomExceptionHandler();
 
 app.UseAuthentication();
 

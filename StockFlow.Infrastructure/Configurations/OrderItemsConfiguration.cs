@@ -28,5 +28,6 @@ internal sealed class OrderItemsConfiguration : IEntityTypeConfiguration<OrderIt
             priceBuilder.Property(money => money.Currency)
                .HasConversion(currency => currency.Code, code => Currency.FromCode(code));
         });
+
     }
 }

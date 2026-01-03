@@ -1,7 +1,4 @@
-﻿using System.Reflection;
-using MediatR;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using StockFlow.Application.Categories.Create;
 using StockFlow.Application.Categories.Delete;
@@ -10,7 +7,6 @@ using StockFlow.Application.Categories.GetById;
 using StockFlow.Application.Categories.Shared;
 using StockFlow.Application.Categories.Update;
 using StockFlow.Domain.Entities.Abstractions;
-using StockFlow.Domain.Entities.Categories;
 
 namespace StockFlow.Api.Endpoints.Categories;
 

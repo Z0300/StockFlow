@@ -1,15 +1,12 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using StockFlow.Application.Abstractions.Clock;
-using StockFlow.Domain.Entities.Orders;
-using StockFlow.Domain.Entities.Products;
+using StockFlow.Domain.Entities.Abstractions;
+using StockFlow.Domain.Entities.TransactionItems;
 using StockFlow.Domain.Entities.Transactions;
 using StockFlow.Domain.Entities.Transactions.Enums;
-using StockFlow.Domain.Entities.TransferItems;
 using StockFlow.Domain.Entities.Transfers;
 using StockFlow.Domain.Entities.Transfers.Events;
-using StockFlow.Domain.Entities.Warehouses;
-using StockFlow.Domain.Shared;
 
 
 
@@ -20,15 +17,18 @@ internal sealed class DispatchTransferDomainEventHandler : INotificationHandler<
     private readonly ITransferRepository _transferRepository;
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly ITransactionRepository _transactionRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
     public DispatchTransferDomainEventHandler(
     ITransferRepository transferRepository,
     IDateTimeProvider dateTimeProvider,
-    ITransactionRepository transactionRepository)
+    ITransactionRepository transactionRepository,
+    IUnitOfWork unitOfWork)
     {
         _transferRepository = transferRepository;
         _dateTimeProvider = dateTimeProvider;
         _transactionRepository = transactionRepository;
+        _unitOfWork = unitOfWork;
     }
     public async Task Handle(TransferDispatchedEvent notification, CancellationToken cancellationToken)
     {
@@ -39,16 +39,21 @@ internal sealed class DispatchTransferDomainEventHandler : INotificationHandler<
             return;
         }
 
-        IReadOnlyCollection<Transaction> transctions = Transaction.CreateMany(
+        var transctions = Transaction.Create(
             transfer.SourceWarehouseId,
             TransactionType.TransferOut,
             null,
             null,
             transfer.Id,
             _dateTimeProvider.UtcNow,
-            transfer.Items.Select<TransferItem, (ProductId, int, Money?)>(i =>
-                (i.ProductId, i.ReceivedQuantity ?? 0, null)));
+            [.. transfer.TransferItem.Select(item =>
+                TransactionItem.Create(
+                    item.ProductId,
+                    item.ReceivedQuantity ?? 0,
+                    null))]);
 
-        await _transactionRepository.BulkInsertAsync(transctions, cancellationToken);
+        _transactionRepository.Add(transctions);
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

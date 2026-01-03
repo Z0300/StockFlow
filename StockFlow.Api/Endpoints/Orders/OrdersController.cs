@@ -1,12 +1,5 @@
-﻿using System.Threading;
-using MediatR;
-using Microsoft.AspNetCore.Http;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using StockFlow.Api.Endpoints.Categories;
-using StockFlow.Application.Categories.Create;
-using StockFlow.Application.Categories.Get;
-using StockFlow.Application.Categories.Shared;
-using StockFlow.Application.Categories.Update;
 using StockFlow.Application.Orders.Cancel;
 using StockFlow.Application.Orders.Create;
 using StockFlow.Application.Orders.Get;

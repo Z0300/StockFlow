@@ -24,5 +24,10 @@ internal sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.HasOne<Supplier>()
             .WithMany()
             .HasForeignKey(u => u.SupplierId);
+
+        builder.HasMany(x => x.OrderItems)
+            .WithOne()
+            .HasForeignKey(x => x.OrderId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

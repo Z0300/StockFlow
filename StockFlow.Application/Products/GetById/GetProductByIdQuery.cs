@@ -1,5 +1,4 @@
 ﻿using StockFlow.Application.Abstractions.Caching;
-using StockFlow.Application.Abstractions.Messaging;
 
 namespace StockFlow.Application.Products.GetById;
 

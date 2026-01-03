@@ -35,7 +35,8 @@ internal sealed class CreateTransactionCommandValidator : AbstractValidator<Crea
         // Purchase Receipt Validation
         When(x => x.TransactionType == TransactionType.PurchaseReceipt, () =>
         {
-            RuleFor(x => x.OrderId).NotNull().NotEqual(Guid.Empty);
+            RuleFor(x => x.OrderId).NotEmpty()
+                .WithMessage($"Order ID is required for transaction ");
 
             RuleFor(x => x.Items)
                 .Must(items => items.All(g => g.QuantityChange > 0))
@@ -99,7 +100,8 @@ internal sealed class CreateTransactionCommandValidator : AbstractValidator<Crea
                 items.RuleFor(i => i.QuantityChange).NotEqual(0);
             });
 
-            RuleFor(x => x.Reason).NotEmpty();
+            RuleFor(x => x.Reason).NotEmpty()
+            .WithMessage($"Reason is required for transaction type {TransactionType.Adjustment}");
         });
 
     }
