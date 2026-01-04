@@ -10,4 +10,4 @@ public sealed record GetTransactionQuery(
     string ProductName,
     int Type,
     int Page,
-    int PageSize) : IQuery<PagedList<TransactionReponse>>;
+    int PageSize) : IQuery<PagedList<TransactionsReponse>>;
