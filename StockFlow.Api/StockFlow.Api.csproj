@@ -9,6 +9,14 @@
 
 
 	<ItemGroup>
+	  <Compile Remove="Infrastructure\**" />
+	  <Content Remove="Infrastructure\**" />
+	  <EmbeddedResource Remove="Infrastructure\**" />
+	  <None Remove="Infrastructure\**" />
+	</ItemGroup>
+
+
+	<ItemGroup>
 		<PackageReference Include="MediatR" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" />
@@ -35,10 +43,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\StockFlow.Infrastructure\StockFlow.Infrastructure.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Infrastructure\" />
 	</ItemGroup>
 
 </Project>

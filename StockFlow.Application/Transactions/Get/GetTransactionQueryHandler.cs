@@ -11,7 +11,7 @@ using StockFlow.Domain.Shared;
 namespace StockFlow.Application.Transactions.Get;
 
 internal sealed class GetTransactionQueryHandler
-    : IQueryHandler<GetTransactionQuery, PagedList<TransactionReponse>>
+    : IQueryHandler<GetTransactionQuery, PagedList<TransactionsReponse>>
 {
     private readonly ISqlConnectionFactory _sqlConnectionFactory;
 
@@ -19,7 +19,7 @@ internal sealed class GetTransactionQueryHandler
     {
         _sqlConnectionFactory = sqlConnectionFactory;
     }
-    public async Task<Result<PagedList<TransactionReponse>>> Handle(GetTransactionQuery request, CancellationToken cancellationToken)
+    public async Task<Result<PagedList<TransactionsReponse>>> Handle(GetTransactionQuery request, CancellationToken cancellationToken)
     {
         using IDbConnection connection = _sqlConnectionFactory.CreateConnection();
 
@@ -30,7 +30,6 @@ internal sealed class GetTransactionQueryHandler
                               t.id AS TransactionId,
                               p.name AS Product,
                               w.name AS Warehouse,
-                              ti.quantity_change AS QuantityChange,
                               t.transaction_type AS TransactionType
                             FROM transactions t
                             INNER JOIN transaction_items ti ON t.id = ti.transaction_id 
@@ -43,9 +42,9 @@ internal sealed class GetTransactionQueryHandler
                             ORDER BY t.created_at DESC
                             OFFSET {offset} LIMIT {request.PageSize}");
 
-        IEnumerable<TransactionReponse> rows = await connection.QueryAsync<TransactionReponse>(builder.Sql, builder.Parameters);
+        IEnumerable<TransactionsReponse> rows = await connection.QueryAsync<TransactionsReponse>(builder.Sql, builder.Parameters);
 
-        var transactions = PagedList<TransactionReponse>.CreateFromEnumerable(
+        var transactions = PagedList<TransactionsReponse>.CreateFromEnumerable(
                 rows,
                 request.Page,
                 request.PageSize);
