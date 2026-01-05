@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Dapper;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -139,7 +140,9 @@ public static class DependencyInjection
         {
             services.AddAuthorization();
 
-            services.AddScoped<PermissionProvider>();
+            services.AddScoped<AuthorizationService>();
+
+            services.AddTransient<IClaimsTransformation, CustomClaimsTransformation>();
 
             services.AddTransient<IAuthorizationHandler, PermissionAuthorizationHandler>();
 

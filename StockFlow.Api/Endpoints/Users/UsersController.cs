@@ -54,7 +54,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("me")]
-    [HasPermission(Permissions.UsersAccess)]
+    [HasPermission(Permissions.AdminAccess)]
     public async Task<IActionResult> GetLoggedInUserV2(CancellationToken cancellationToken)
     {
         var query = new GetUserByIdQuery();
