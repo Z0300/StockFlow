@@ -2,7 +2,12 @@
 
 namespace StockFlow.Infrastructure.Authorization;
 
-internal sealed class PermissionRequirement(string permission) : IAuthorizationRequirement
+internal sealed class PermissionRequirement : IAuthorizationRequirement
 {
-    public string Permission { get; } = permission;
+    public PermissionRequirement(string permissions)
+    {
+        Permissions = permissions;
+    }
+
+    public string Permissions => field;
 }
