@@ -5,6 +5,7 @@ using StockFlow.Application.Suppliers.Shared;
 using StockFlow.Application.Transactions.Create;
 using StockFlow.Application.Transactions.Get;
 using StockFlow.Application.Transactions.GetById;
+using StockFlow.Application.Transactions.TransferOut;
 using StockFlow.Domain.Entities.Abstractions;
 using StockFlow.Domain.Entities.Transactions.Enums;
 using StockFlow.Domain.Shared;
@@ -45,6 +46,8 @@ public class TransactionsController : ControllerBase
         return Ok(result.Value);
     }
 
+
+
     [HttpGet("{transactionId:guid}")]
     public async Task<IActionResult> GetTransaction(Guid transactionId, CancellationToken cancellationToken)
     {
@@ -79,4 +82,6 @@ public class TransactionsController : ControllerBase
 
         return CreatedAtAction(nameof(GetTransaction), new { transactionId = result.Value }, result.Value);
     }
+
+    
 }

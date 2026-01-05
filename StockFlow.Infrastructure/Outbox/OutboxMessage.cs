@@ -27,5 +27,5 @@ public class OutboxMessage
     /// </summary>
     public string Content { get; private set; }
     public DateTime? ProcessedOnUtc { get; set; }
-    public string Error { get; set; }
+    public string? Error { get; set; }
 }
