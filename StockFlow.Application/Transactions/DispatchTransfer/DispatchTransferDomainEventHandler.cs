@@ -32,7 +32,8 @@ internal sealed class DispatchTransferDomainEventHandler : INotificationHandler<
     }
     public async Task Handle(TransferDispatchedEvent notification, CancellationToken cancellationToken)
     {
-        Transfer? transfer = await _transferRepository.GetByIdAsync(notification.TransferId, cancellationToken);
+        Transfer? transfer = await _transferRepository
+            .GetByIdWithItemsAsync(notification.TransferId, cancellationToken);
 
         if (transfer is null)
         {

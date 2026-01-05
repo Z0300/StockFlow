@@ -1,7 +1,10 @@
-﻿namespace StockFlow.Domain.Entities.Transfers;
+﻿using System.Linq.Expressions;
+
+namespace StockFlow.Domain.Entities.Transfers;
 
 public interface ITransferRepository
 {
     Task<Transfer> GetByIdAsync(TransferId id, CancellationToken cancellationToken = default);
+    Task<Transfer> GetByIdWithItemsAsync(TransferId id, CancellationToken cancellationToken = default);
     void Add(Transfer transfer);
 }

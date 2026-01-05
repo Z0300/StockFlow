@@ -4,7 +4,6 @@ using Newtonsoft.Json;
 using StockFlow.Application.Abstractions.Clock;
 using StockFlow.Application.Exceptions;
 using StockFlow.Domain.Entities.Abstractions;
-using StockFlow.Domain.Entities.Warehouses;
 using StockFlow.Infrastructure.Outbox;
 
 namespace StockFlow.Infrastructure.Database;
@@ -27,8 +26,6 @@ public sealed class ApplicationDbContext : DbContext, IUnitOfWork
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
-
-        modelBuilder.Owned<WarehouseId>();
 
         base.OnModelCreating(modelBuilder);
     }

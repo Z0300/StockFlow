@@ -17,7 +17,6 @@ internal abstract class Repository<TEntity, TEntityId>
         return await DbContext
          .Set<TEntity>()
          .FirstOrDefaultAsync(user => user.Id == id, cancellationToken);
-
     }
 
     public virtual void Add(TEntity entity)
