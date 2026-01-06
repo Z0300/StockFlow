@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StockFlow.Application.Categories.Create;
 using StockFlow.Application.Categories.Delete;
@@ -10,8 +11,9 @@ using StockFlow.Domain.Entities.Abstractions;
 
 namespace StockFlow.Api.Endpoints.Categories;
 
-[Route("api/categories")]
+[Authorize]
 [ApiController]
+[Route("api/categories")]
 public class CategoriesController : ControllerBase
 {
     private readonly ISender _sender;

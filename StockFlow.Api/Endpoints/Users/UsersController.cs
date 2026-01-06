@@ -9,8 +9,8 @@ using StockFlow.Infrastructure.Authorization;
 
 namespace StockFlow.Api.Endpoints.Users;
 
-[Route("api/[controller]")]
 [ApiController]
+[Route("api/users")]
 public class UsersController : ControllerBase
 {
     private readonly ISender _sender;
@@ -21,7 +21,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost("register")]
-    [HasPermission(Permissions.UsersAccess)]
+    [HasPermission(Permissions.AdminAccess)]
     public async Task<IActionResult> Register(RegisterUserRequest request, CancellationToken cancellationToken)
     {
         var command = new RegisterUserCommand(
@@ -54,7 +54,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("me")]
-    [HasPermission(Permissions.AdminAccess)]
+    [HasPermission(Permissions.UsersAccess)]
     public async Task<IActionResult> GetLoggedInUserV2(CancellationToken cancellationToken)
     {
         var query = new GetUserByIdQuery();
