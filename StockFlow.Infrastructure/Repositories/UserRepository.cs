@@ -21,10 +21,29 @@ internal sealed class UserRepository : Repository<User, UserId>, IUserRepository
         DbContext.Add(user);
     }
 
+    public void AddRefresToken(RefreshToken refreshToken)
+            => DbContext.Add(refreshToken);
+
     public async Task<User> GetByEmailAsync(Email email, CancellationToken cancellationToken = default)
     {
         return await DbContext
             .Set<User>()
             .FirstOrDefaultAsync(user => user.Email == email, cancellationToken);
+    }
+
+    public async Task<RefreshToken> GetRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
+    {
+        return await DbContext
+            .Set<RefreshToken>()
+            .Include(x => x.User)
+            .FirstOrDefaultAsync(user => user.Token == refreshToken, cancellationToken);
+    }
+
+    public async Task RevokeRefreshTokenAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        await DbContext
+           .Set<RefreshToken>()
+           .Where(x => x.UserId == new UserId(userId))
+           .ExecuteDeleteAsync(cancellationToken);
     }
 }

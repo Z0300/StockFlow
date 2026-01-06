@@ -14,7 +14,6 @@ internal sealed class RolePermissionConfiguration
 
         builder.HasKey(rolePermission => new { rolePermission.RoleId, rolePermission.PermissionId });
 
-
         builder.HasData(
             new RolePermission
             {
