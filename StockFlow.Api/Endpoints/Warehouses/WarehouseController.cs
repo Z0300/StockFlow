@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StockFlow.Application.Warehouses.Create;
 using StockFlow.Application.Warehouses.Delete;
@@ -10,8 +11,9 @@ using StockFlow.Domain.Entities.Abstractions;
 
 namespace StockFlow.Api.Endpoints.Warehouses;
 
-[Route("api/warehouses")]
+[Authorize]
 [ApiController]
+[Route("api/warehouses")]
 public class WarehouseController : ControllerBase
 {
     private readonly ISender _sender;

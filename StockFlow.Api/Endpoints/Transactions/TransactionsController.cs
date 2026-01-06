@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StockFlow.Application.Suppliers.GetById;
 using StockFlow.Application.Suppliers.Shared;
@@ -12,8 +13,9 @@ using StockFlow.Domain.Shared;
 
 namespace StockFlow.Api.Endpoints.Transactions;
 
-[Route("api/transactions")]
+[Authorize]
 [ApiController]
+[Route("api/transactions")]
 public class TransactionsController : ControllerBase
 {
     private readonly ISender _sender;

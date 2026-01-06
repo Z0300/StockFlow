@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StockFlow.Application.Transactions.DispatchTransfer;
 using StockFlow.Application.Transactions.GetTransfer;
@@ -8,8 +9,9 @@ using StockFlow.Domain.Entities.Abstractions;
 
 namespace StockFlow.Api.Endpoints.Transfers;
 
-[Route("api/transfers")]
+[Authorize]
 [ApiController]
+[Route("api/transfers")]
 public class TransfersController : ControllerBase
 {
     private readonly ISender _sender;

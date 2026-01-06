@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StockFlow.Application.Orders.Cancel;
 using StockFlow.Application.Orders.Create;
@@ -8,8 +9,9 @@ using StockFlow.Domain.Entities.Abstractions;
 
 namespace StockFlow.Api.Endpoints.Orders;
 
-[Route("api/[controller]")]
+[Authorize]
 [ApiController]
+[Route("api/orders")]
 public class OrdersController : ControllerBase
 {
     private readonly ISender _sender;

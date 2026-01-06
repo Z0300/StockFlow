@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StockFlow.Application.Products.Create;
 using StockFlow.Application.Products.Delete;
@@ -9,8 +10,9 @@ using StockFlow.Domain.Entities.Abstractions;
 
 namespace StockFlow.Api.Endpoints.Products;
 
-[Route("api/products")]
+[Authorize]
 [ApiController]
+[Route("api/products")]
 public class ProductsController : ControllerBase
 {
     private readonly ISender _sender;

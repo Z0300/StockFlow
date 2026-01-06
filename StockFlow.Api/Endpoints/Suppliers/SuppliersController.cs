@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StockFlow.Application.Suppliers.Create;
 using StockFlow.Application.Suppliers.Delete;
@@ -10,8 +11,9 @@ using StockFlow.Domain.Entities.Abstractions;
 
 namespace StockFlow.Api.Endpoints.Suppliers;
 
-[Route("api/suppliers")]
+[Authorize]
 [ApiController]
+[Route("api/suppliers")]
 public class SuppliersController : ControllerBase
 {
     private readonly ISender _sender;
