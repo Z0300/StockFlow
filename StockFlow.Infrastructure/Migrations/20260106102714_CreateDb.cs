@@ -34,7 +34,7 @@ public partial class CreateDb : Migration
                 type = table.Column<string>(type: "text", nullable: false),
                 content = table.Column<string>(type: "json", nullable: false),
                 processed_on_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                error = table.Column<string>(type: "text", nullable: false)
+                error = table.Column<string>(type: "text", nullable: true)
             },
             constraints: table =>
             {
@@ -149,6 +149,26 @@ public partial class CreateDb : Migration
                     name: "fk_role_permissions_roles_role_id",
                     column: x => x.role_id,
                     principalTable: "roles",
+                    principalColumn: "id",
+                    onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
+            name: "refresh_tokens",
+            columns: table => new
+            {
+                id = table.Column<Guid>(type: "uuid", nullable: false),
+                token = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                user_id = table.Column<Guid>(type: "uuid", nullable: false),
+                expires_on_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("pk_refresh_tokens", x => x.id);
+                table.ForeignKey(
+                    name: "fk_refresh_tokens_users_user_id",
+                    column: x => x.user_id,
+                    principalTable: "users",
                     principalColumn: "id",
                     onDelete: ReferentialAction.Cascade);
             });
@@ -354,7 +374,7 @@ public partial class CreateDb : Migration
         migrationBuilder.InsertData(
             table: "permissions",
             columns: ["id", "name"],
-            values: [1, "users:full_access"]);
+            values: [1, "admin:access"]);
 
         migrationBuilder.InsertData(
             table: "roles",
@@ -396,6 +416,17 @@ public partial class CreateDb : Migration
             table: "products",
             column: "name",
             unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "ix_refresh_tokens_token",
+            table: "refresh_tokens",
+            column: "token",
+            unique: true);
+
+        migrationBuilder.CreateIndex(
+            name: "ix_refresh_tokens_user_id",
+            table: "refresh_tokens",
+            column: "user_id");
 
         migrationBuilder.CreateIndex(
             name: "ix_role_permissions_permission_id",
@@ -468,6 +499,9 @@ public partial class CreateDb : Migration
 
         migrationBuilder.DropTable(
             name: "outbox_messages");
+
+        migrationBuilder.DropTable(
+            name: "refresh_tokens");
 
         migrationBuilder.DropTable(
             name: "role_permissions");

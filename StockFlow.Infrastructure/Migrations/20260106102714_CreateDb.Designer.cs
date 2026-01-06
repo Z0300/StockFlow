@@ -12,8 +12,8 @@ using StockFlow.Infrastructure.Database;
 namespace StockFlow.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260105050443_SetErrorColumnToNullable")]
-    partial class SetErrorColumnToNullable
+    [Migration("20260106102714_CreateDb")]
+    partial class CreateDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -371,8 +371,41 @@ namespace StockFlow.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            Name = "users:full_access"
+                            Name = "admin:access"
                         });
+                });
+
+            modelBuilder.Entity("StockFlow.Domain.Entities.Users.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("ExpiresOnUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expires_on_utc");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("token");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_refresh_tokens");
+
+                    b.HasIndex("Token")
+                        .IsUnique()
+                        .HasDatabaseName("ix_refresh_tokens_token");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_refresh_tokens_user_id");
+
+                    b.ToTable("refresh_tokens", (string)null);
                 });
 
             modelBuilder.Entity("StockFlow.Domain.Entities.Users.Role", b =>
@@ -738,6 +771,18 @@ namespace StockFlow.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_transfers_warehouses_source_warehouse_id");
+                });
+
+            modelBuilder.Entity("StockFlow.Domain.Entities.Users.RefreshToken", b =>
+                {
+                    b.HasOne("StockFlow.Domain.Entities.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_refresh_tokens_users_user_id");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("StockFlow.Domain.Entities.Users.RolePermission", b =>

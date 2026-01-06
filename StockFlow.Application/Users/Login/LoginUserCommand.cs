@@ -2,4 +2,4 @@
 
 namespace StockFlow.Application.Users.Login;
 
-public sealed record LoginUserCommand(string Email, string Password) : ICommand<AccessTokenResponse>;
+public sealed record LoginUserCommand(string Email, string Password) : ICommand<TokenResponse>;
